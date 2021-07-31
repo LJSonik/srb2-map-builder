@@ -1,0 +1,82 @@
+/*maps.addObjects{
+-- Player
+{
+	w = FRACUNIT * 3 / 4, h = FRACUNIT * 5 / 4,
+	pityshieldanim = {spd = 1,"PITYA0","PITYB0","PITYA0","PITYC0","PITYA0","PITYD0","PITYA0","PITYE0","PITYA0","PITYF0"},
+	strongforceshieldanim = {spd = 3,"FORCA0","FORCB0","FORCC0","FORCD0","FORCE0","FORCF0","FORCG0","FORCH0","FORCI0","FORCJ0"},
+	weakforceshieldanim = {spd = 3,"FORCK0","FORCL0","FORCM0","FORCN0","FORCO0","FORCP0","FORCQ0","FORCR0","FORCS0","FORCT0"},
+	windshieldanim = {spd = 3,"WINDA0","WINDB0","WINDC0","WINDD0","WINDE0","WINDF0","WINDG0","WINDH0"},
+},
+-- Spilled ring
+{
+	w = 4 * FRACUNIT, h = 4 * FRACUNIT,
+	scale = FRACUNIT / 4,
+	anim = {spd = 1,"RINGA0","RINGB0X0","RINGC0W0","RINGD0V0","RINGE0U0","RINGF0T0","RINGG0S0","RINGH0R0","RINGI0Q0","RINGJ0P0","RINGK0O0","RINGL0N0","RINGM0","RINGL0N0","RINGK0O0","RINGJ0P0","RINGI0Q0","RINGH0R0","RINGG0S0","RINGF0T0","RINGE0U0","RINGD0V0","RINGC0W0","RINGB0X0"}
+},
+-- Blue Crawla
+{
+	w = 8 * FRACUNIT, h = 8 * FRACUNIT,
+	anim = {spd = 3,"POSSB3B7","POSSC3C7","POSSD3D7","POSSE3E7","POSSF3F7"}
+},
+-- Red Crawla
+{
+	w = 8 * FRACUNIT, h = 8 * FRACUNIT,
+	anim = {spd = 3,"SPOSB3B7","SPOSC3C7","SPOSD3D7","SPOSE3E7","SPOSF3F7"}
+},
+-- SDURF
+{
+	w = 6 * FRACUNIT, h = 6 * FRACUNIT,
+	scale = FRACUNIT / 4,
+	anim = {
+		{spd = 9,"FISHB0"}, -- Jumping
+		{spd = 9,"FISHA0"} -- Falling
+	}
+},
+-- Green Spring Shell
+{
+	w = 8 * FRACUNIT, h = 8 * FRACUNIT,
+	anim = {
+		{spd = 4,"SSHLB3B7","SSHLC3C7","SSHLD3D7","SSHLA3A7","SSHLB3B7","SSHLC3C7","SSHLD3D7"},
+		{spd = 1,"SSHLH3H7","SSHLH3H7","SSHLH3H7","SSHLH3H7","SSHLG3G7","SSHLF3F7","SSHLE3E7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7","SSHLA3A7"}
+	}
+},
+-- Yellow Spring Shell
+{
+	w = 8 * FRACUNIT, h = 8 * FRACUNIT,
+	anim = {
+		{spd = 4,"SSHLJ3J7","SSHLK3K7","SSHLL3L7","SSHLI3I7","SSHLJ3J7","SSHLK3K7","SSHLL3L7"},
+		{spd = 1,"SSHLP3P7","SSHLP3P7","SSHLP3P7","SSHLP3P7","SSHLO3O7","SSHLN3N7","SSHLM3M7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7","SSHLI3I7"}
+	}
+},
+-- Gold Buzz
+{
+	w = 6 * FRACUNIT, h = 6 * FRACUNIT,
+	scale = FRACUNIT / 4,
+	anim = {spd = 2,"BUZZA3A7","BUZZB3B7"}
+},
+-- Red Buzz
+{
+	w = 6 * FRACUNIT, h = 6 * FRACUNIT,
+	scale = FRACUNIT / 4,
+	anim = {spd = 2,"RBUZA3A7","RBUZB3B7"}
+},
+-- Green Snapper
+{
+	w = 8 * FRACUNIT, h = 8 * FRACUNIT,
+	scale = FRACUNIT / 4,
+	anim = {spd = 8,"GSNPA3A7","GSNPB3B7","GSNPC3C7","GSNPD3D7"}
+},
+-- Sharp
+{
+	w = 8 * FRACUNIT, h = 8 * FRACUNIT,
+	scale = FRACUNIT / 4,
+	anim = {
+		{spd = 9,"SHRPA3"}
+	}
+},
+-- Thok
+{
+	w = 8 * FRACUNIT, h = 8 * FRACUNIT,
+	anim = {spd = 9,"THOKA0"}
+},
+}*/

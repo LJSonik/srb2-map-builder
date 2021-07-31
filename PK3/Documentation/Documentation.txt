@@ -1,0 +1,20 @@
+Documentation
+=============
+
+
+Object variables:
+	type
+	l, t, r, b
+	pl, pt, pr, pb
+	w, h
+	layer
+	dir
+	anim
+	spr
+	speedx
+	speedy
+	groundspeed
+	angle
+	floormode
+	grounded
+	player

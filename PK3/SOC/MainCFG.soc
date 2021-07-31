@@ -1,0 +1,7 @@
+Level MP
+LevelName = The Map Builder
+NoZone = true
+SubTitle = Beta 0.3
+TypeOfLevel = Singleplayer,Co-op
+Music = 
+LevelSelect = true
