@@ -10,8 +10,6 @@ function maps.updateClient(v)
 	local cl = maps.client
 	local p = maps.getPlayer(consoleplayer)
 
-	cl.active = true
-
 	maps.updateGui(v, cl.cmd)
 
 	if p and p.builder then
@@ -21,8 +19,6 @@ function maps.updateClient(v)
 	cl.prevleft, cl.prevright, cl.prevup, cl.prevdown = maps.getLocalKeys(cl.cmd)
 	cl.prevbuttons = cl.cmd.buttons
 	cl.inputeaten = false
-
-	cl.active = false
 end
 
 function maps.initialiseClient()

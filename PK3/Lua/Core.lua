@@ -392,6 +392,8 @@ if not cpulib then
 			maps.decompressGamestate()
 		end
 
+		maps.switchEditorStateToClientSide()
+
 		-- Hack due to consoleplayer being incorrectly set for joiners
 		--if #consoleplayer == 0 and not isserver return end
 
@@ -429,10 +431,12 @@ if not cpulib then
 	end)
 
 	addHook("KeyDown", function(key)
+		maps.switchEditorStateToClientSide()
 		maps.handleKeyDown(key)
 	end)
 
 	addHook("KeyUp", function(key)
+		maps.switchEditorStateToClientSide()
 		maps.handleKeyUp(key)
 	end)
 
@@ -441,12 +445,15 @@ if not cpulib then
 			maps.decompressGamestate()
 		end
 
+		maps.switchEditorStateToServerSide()
+
 		for owner in players.iterate do
 			custominput.handleReception(owner)
 		end
 	end)
 
 	function custominput.receive(input, owner)
+		maps.switchEditorStateToServerSide()
 		maps.receiveEditorInput(input, maps.getPlayer(owner))
 	end
 
@@ -456,6 +463,8 @@ if not cpulib then
 		if maps.compressedgamestate then
 			maps.decompressGamestate()
 		end
+
+		maps.switchEditorStateToServerSide()
 
 		if maps.mapchanged then
 			maps.mapchanged = false
@@ -472,6 +481,8 @@ if not cpulib then
 	end)
 
 	addHook("PlayerQuit", function(owner)
+		maps.switchEditorStateToServerSide()
+
 		if owner.maps then
 			leaveGame(owner.maps.player)
 		end
@@ -484,30 +495,21 @@ if not cpulib then
 	hud.add(function(v, owner)
 		if gamemap == 557
 		and not (splitscreen and #owner == 1) then
-			local p = maps.getPlayer(consoleplayer)
-			local backup
-
-			if maps.client and p and p.builder then
-				backup = maps.backupEditorState(p)
-				if maps.client.backup then
-					maps.restoreEditorState(maps.client.backup, p)
-				end
-
+			local cl = maps.client
+			if cl and cl.player and cl.player.builder then
+				maps.switchEditorStateToClientSide()
 				maps.updateClient(v)
 			end
 
 			maps.drawGame(v, owner)
-
-			if maps.client and p and p.builder then
-				maps.client.backup = maps.backupEditorState(p)
-				maps.restoreEditorState(backup, p)
-			end
 		end
 	end, "game")
 end
 
 addHook("MapChange", function()
 	if gamemap ~= 557 then return end
+
+	maps.switchEditorStateToServerSide()
 
 	maps.mapchanged = true
 
@@ -560,6 +562,8 @@ function maps.addCommand(name, func, ...)
 		if maps.compressedgamestate then
 			maps.decompressGamestate()
 		end
+
+		maps.switchEditorStateToServerSide()
 
 		func(...)
 	end, ...)

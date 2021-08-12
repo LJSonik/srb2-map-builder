@@ -202,8 +202,34 @@ function maps.restoreEditorState(bk, p)
 	p.buildermode = maps.copyTable(bk.buildermode)
 end
 
+function maps.switchEditorStateToSide(active)
+	local cl = maps.client
+	if not cl or cl.active == active then return end
+
+	local p = cl.player
+	if not (p and p.builder) then return end
+
+	local backup = maps.backupEditorState(p)
+
+	if cl.backup then
+		maps.restoreEditorState(cl.backup, p)
+	end
+
+	cl.backup = backup
+
+	cl.active = active
+end
+
+function maps.switchEditorStateToServerSide()
+	maps.switchEditorStateToSide(false)
+end
+
+function maps.switchEditorStateToClientSide()
+	maps.switchEditorStateToSide(true)
+end
+
 function maps.enterClientEditor(p)
-	local p = maps.getPlayer(consoleplayer)
+local p = maps.getPlayer(consoleplayer)
 	local cl = maps.client
 
 	cl.backup = nil
