@@ -207,11 +207,11 @@ local function handleBuildOrRemove(p, owner, t)
 		end
 	elseif p.erase == false then -- Building
 		if p.layout then
-			if not tileIsBig(p.tile) or not maps.layoutConflictsWithMap(p) then
+			if not tileIsBig(p.buildertile) or not maps.layoutConflictsWithMap(p) then
 				placeTilesFromLayout(p)
 			end
 		else
-			placeTile(p.tile, i, p)
+			placeTile(p.buildertile, i, p)
 		end
 	end
 
@@ -231,7 +231,7 @@ local function handleRectangleFill(p, t)
 	local area = (x2 - x1 + 1) * (y2 - y1 + 1)
 
 	if not (t.prevbuttons & BT_JUMP) and area <= 1024 then
-		local tile = p.tile
+		local tile = p.buildertile
 		local ok = true
 
 		if p.builderlayer == 1 then
@@ -276,7 +276,7 @@ local function handleRectangleFill(p, t)
 								maps.setTile(1, i, tile)
 								maps.tileinfo[i] = $ & ~240 | (t << 4)
 								-- !!!
-								--if maps.tiledefs_type[p.tile] == 25 -- Enemy spawner
+								--if maps.tiledefs_type[p.buildertile] == 25 -- Enemy spawner
 									--maps.checkSpawner(i, p.builderx, p.buildery)
 								--end
 								i = $ + 1
@@ -337,7 +337,7 @@ end
 /*function maps.handleBuilding(p, owner, t, bt, left, right, up, down)
 	handleMovement(p, t, left, right, up, down)
 
-	if bt & BT_JUMP and (maps.allowediting or owner == server or IsPlayerAdmin(owner)) and p.tile
+	if bt & BT_JUMP and (maps.allowediting or owner == server or IsPlayerAdmin(owner)) and p.buildertile
 		if p.fillx == nil
 			handleBuildOrRemove(p, owner, t)
 		else
@@ -376,7 +376,7 @@ end
 		end
 
 		if tilepos ~= nil and not maps.tiledefs[tile].noedit
-			p.tile = tile
+			p.buildertile = tile
 			p.layout = nil
 
 			if tileIsBig(tile)

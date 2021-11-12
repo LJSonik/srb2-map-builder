@@ -555,7 +555,7 @@ local function drawMap(v, p)
 	if p.builder then
 		-- Draw selected layer
 		/*local s
-		if p.builderlayer == 2 or not p.tile or maps.tiledefs_type[p.tile] ~= 1
+		if p.builderlayer == 2 or not p.buildertile or maps.tiledefs_type[p.tile] ~= 1
 			s = "Layer "..p.builderlayer
 		else
 			s = "Layer 1 - "..(
@@ -569,7 +569,7 @@ local function drawMap(v, p)
 		-- !!!
 		local text = "Layer "..p.builderlayer
 		if (p.builderlayer == 2 or p.builderlayer == 3)
-		and not maps.tiledefs_empty[p.tile] and not p.bothsolid then
+		and not maps.tiledefs_empty[p.buildertile] and not p.bothsolid then
 			local otherlayer = (p.builderlayer == 2 and 3 or 2)
 			text = $.." - layer "..otherlayer.." passable"
 		end

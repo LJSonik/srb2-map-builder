@@ -128,7 +128,7 @@ function maps.clearMap()
 
 	-- Reset players
 	for _, p in ipairs(maps.pp) do
-		p.tile = nil
+		p.buildertile = nil
 		p.builderx = maps.map.spawnx / TILESIZE
 		p.buildery = maps.map.spawny / TILESIZE + 1
 		p.tpx, p.tpy = nil, nil
