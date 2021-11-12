@@ -39,6 +39,10 @@ local editorcommands = {}
 
 
 --#region functions
+
+---@param map maps.Map
+---@param pos integer
+---@return boolean
 function maps.isStackFull(map, pos)
 	local n = 0
 	for layer = 1, 4 do
@@ -49,6 +53,10 @@ function maps.isStackFull(map, pos)
 	return n >= 2
 end
 
+---@param map maps.Map
+---@param tile integer
+---@param pos integer
+---@param p maps.Player
 function maps.placeTile(map, tile, pos, p)
 	local oldtile = map[p.builderlayer][pos]
 
@@ -84,6 +92,13 @@ function maps.placeTile(map, tile, pos, p)
 	end
 end
 
+---@param map maps.Map
+---@param p maps.Player
+---@param tile integer
+---@param x1 fixed_t
+---@param y1 fixed_t
+---@param x2 fixed_t
+---@param y2 fixed_t
 function maps.placeTilesInLine(map, p, tile, x1, y1, x2, y2)
 	tile = maps.tiledefs[tile].index
 
@@ -108,6 +123,9 @@ function maps.placeTilesInLine(map, p, tile, x1, y1, x2, y2)
 	end
 end
 
+---@param map maps.Map
+---@param p maps.Player
+---@return boolean
 function maps.tileLayoutConflictsWithMap(map, p)
 	local layoutx1 = p.buildertilelayoutx1
 	local layouty1 = p.buildertilelayouty1
@@ -136,6 +154,8 @@ function maps.tileLayoutConflictsWithMap(map, p)
 	return false
 end
 
+---@param map maps.Map
+---@param p maps.Player
 function maps.placeTileLayout(map, p)
 	local layout = maps.tilelayouts[p.buildertilelayoutindex]
 	local layoutx1 = p.buildertilelayoutx1
@@ -162,6 +182,9 @@ function maps.placeTileLayout(map, p)
 	end
 end
 
+---@param p maps.Player
+---@param dx integer
+---@param dy integer
 local function moveBuilder(p, dx, dy)
 	/*p.builderx = $ + dx
 	if p.builderx < 0

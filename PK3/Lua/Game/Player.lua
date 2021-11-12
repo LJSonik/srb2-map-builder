@@ -6,7 +6,9 @@ local TILESIZE = maps.TILESIZE
 
 
 ---@class maps.Player
+---@field builder     boolean
 ---@field buildermode maps.EditorMode
+---@field obj         Maps.Object
 
 
 maps.PLAYER_WIDTH       = TILESIZE *  6 / 8

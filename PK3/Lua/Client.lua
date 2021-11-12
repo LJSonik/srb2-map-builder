@@ -1,5 +1,20 @@
 ---@class maps.Client
+---@field active boolean
 ---@field player maps.Player
+---@field backup table
+---
+---@field leftpressed  boolean
+---@field rightpressed boolean
+---@field uppressed    boolean
+---@field downpressed  boolean
+---
+---@field prevleft  boolean
+---@field prevright boolean
+---@field prevup    boolean
+---@field prevdown  boolean
+---
+---@field fullresendneeded boolean
+---@field fullresendtime   integer
 
 
 ---@type maps.Client

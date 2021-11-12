@@ -6,6 +6,27 @@
 local FU = FRACUNIT
 
 
+---@class Maps.Object
+---@field type number
+---@field l fixed_t
+---@field t fixed_t
+---@field r fixed_t
+---@field b fixed_t
+---@field w fixed_t
+---@field h fixed_t
+---@field layer number
+---@field dir number
+---@field anim string
+---@field spr number
+---@field speedx fixed_t
+---@field speedy fixed_t
+---@field groundspeed fixed_t
+---@field angle angle_t
+---@field floormode number
+---@field grounded boolean
+---@field player maps.Player
+
+
 maps.objectdefs = {}
 
 maps.objects = {}
