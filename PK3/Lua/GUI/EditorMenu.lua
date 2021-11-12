@@ -193,11 +193,31 @@ function Menu:setupButtons()
 		local bt = gui.Button()
 		self.wheelButtons[index] = self:attachBack(bt)
 
-		bt:setSize(w, h)
-		bt:setNormalBackgroundColor(buttonBackgroundColor)
-		bt:setNormalBorderColor(buttonBorderColor)
-		bt:setPressedBackgroundColor(153)
-		bt:setPressedBorderColor(153)
+		bt:resize(w, h)
+
+		bt:setNormalStyle{
+			background = {
+				type = "color",
+				color = 31,
+			},
+			border = {
+				type = "color",
+				size = 1*FU,
+				color = 0
+			}
+		}
+
+		bt:setPressedStyle{
+			background = {
+				type = "color",
+				color = 153
+			},
+			border = {
+				type = "color",
+				size = 1*FU,
+				color = 153
+			}
+		}
 
 		local x = cx - w / 2 + dist * pos[1]
 		local y = cy - h / 2 + dist * pos[2]
@@ -225,7 +245,7 @@ end
 function Menu:setup()
 	self:disable()
 	self:move(0, 0)
-	self:setSize(gui.screen.width, gui.screen.height)
+	self:resize(gui.root.main.width, gui.root.main.height)
 
 	/*local dist = 64 * FU
 	local w, h = 48 * FU, 24 * FU
@@ -236,7 +256,7 @@ function Menu:setup()
 		button = gui.Button()
 		self[name] = self:attach(button)
 
-		button:setSize(w, h)
+		button:resize(w, h)
 		button:move(cx - w / 2 + dist * x, cy - h / 2 + dist * y)
 
 		button:setText(text)
@@ -291,7 +311,7 @@ function Menu:handleEvents()
 	if cmd.buttons & BT_SPIN and not (self.prevButtons & BT_SPIN) then
 		if self.notUsedYet then
 			local picker = maps.TilePicker()
-			gui.screen.tilePicker = gui.screen:attach(picker)
+			gui.root.main.tilePicker = gui.root.main:attach(picker)
 			picker:setup()
 			picker:focus()
 		end
@@ -304,7 +324,7 @@ end
 
 
 function maps.openEditorMenu()
-	local menu = gui.screen.editorMenu
+	local menu = gui.root.main.editorMenu
 
 	menu.notUsedYet = true
 	menu.prevButtons = gui.cmd.buttons
@@ -339,7 +359,8 @@ function maps.openEditorMenu()
 end
 
 function maps.closeEditorMenu()
-	gui.screen.editorMenu:disable()
-	gui.screen.editorMenu:unfocus() -- !!!
+	local menu = gui.root.main.editorMenu
+	menu:disable()
+	menu:unfocus() -- !!!
 	--maps.client.ignorespin = true
 end

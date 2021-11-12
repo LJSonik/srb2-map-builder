@@ -1,6 +1,21 @@
 local gui = ljrequire "ljgui.common"
 
 
+---@class ljgui.ItemStyle
+---@field background table
+---@field border     table
+
+
+---@class ljgui.Item
+---@field parent     ljgui.Item
+---@field enabled    boolean
+---@field backChild  ljgui.Item
+---@field frontChild ljgui.Item
+---
+---@field left   fixed_t
+---@field right  fixed_t
+---@field top    fixed_t
+---@field bottom fixed_t
 local Item = gui.extend{}
 gui.Item = Item
 
@@ -108,54 +123,108 @@ function Item:disable()
 end
 
 function Item:move(x, y)
-	self.left = x
-	self.top = y
+	if self.left ~= nil then
+		local dx = x - self.left
+		local dy = y - self.top
 
-	self:cachePosition()
-end
+		self.left = x
+		self.top = y
 
-function Item:cachePosition()
-	local parent = self.parent
+		local child = self.backChild
+		while child do
+			if child.left ~= nil then
+				child:move(child.left + dx, child.top + dy)
+			end
 
-	if parent then
-		self.cache_left = parent.cache_left + self.left
-		self.cache_top = parent.cache_top + self.top
+			child = child.front
+		end
+
+		-- self:cachePosition()
 	else
-		self.cache_left = self.left
-		self.cache_top = self.top
+		self.left = x
+		self.top = y
 	end
 
-	local child = self.backChild
-	while child do
-		--if child.enabled then
-			child:cachePosition()
-		--end
-
-		child = child.front
+	if self.onMove then
+		self:onMove()
 	end
 end
+
+-- function Item:cachePosition()
+-- 	local parent = self.parent
+
+-- 	if parent then
+-- 		self.cache_left = parent.cache_left + self.left
+-- 		self.cache_top = parent.cache_top + self.top
+-- 	else
+-- 		self.cache_left = self.left
+-- 		self.cache_top = self.top
+-- 	end
+
+-- 	local child = self.backChild
+-- 	while child do
+-- 		--if child.enabled then
+-- 			child:cachePosition()
+-- 		--end
+
+-- 		child = child.front
+-- 	end
+-- end
 
 function Item:getCenter()
-	return self.width / 2, self.height / 2
+	return
+		self.left + self.width  / 2,
+		self.top  + self.height / 2
 end
 
-function Item:setSize(width, height)
+---@param width fixed_t
+---@param height fixed_t
+function Item:resize(width, height)
 	self.width = width
 	self.height = height
+
+	if self.onResize then
+		self:onResize()
+	end
 end
 
 function Item:focus()
-	gui.screen.focusedItem = self
+	gui.root.focusedItem = self
 end
 
 function Item:unfocus()
-	if self == gui.screen.focusedItem then
-		gui.screen.focusedItem = nil
+	if self == gui.root.focusedItem then
+		gui.root.focusedItem = nil
 	end
 end
 
 function Item:hasFocus()
-	return (gui.screen.focusedItem == self)
+	return (gui.root.focusedItem == self)
+end
+
+---@param x fixed_t
+---@param y fixed_t
+---@return boolean
+function Item:isPointInside(x, y)
+	local l = self.left
+	if x < l or x >= l + self.width then
+		return false
+	end
+
+	local t = self.top
+	if y < t or y >= t + self.height then
+		return false
+	end
+
+	return true
+end
+
+function Item:ignoreMouse()
+	self.ignoresMouse = true
+end
+
+function Item:unignoreMouse()
+	self.ignoresMouse = false
 end
 
 /*function Item:applyTemplate(template)
@@ -172,6 +241,81 @@ function Item:drawChildren(v)
 		end
 
 		child = child.front
+	end
+end
+
+---@param v videolib
+---@param style ljgui.ItemStyle
+function Item:drawStyle(v, style)
+	if not style then return end
+
+	local l, t = self.left, self.top
+	local w, h = self.width, self.height
+	local bdStyle = style.border
+	local bdSize = bdStyle and bdStyle.size or 0
+
+	if bdStyle then
+		local bdType = bdStyle.type
+		if bdType == "color" then
+			v.drawFill(l / FU, t / FU, w / FU, h / FU, bdStyle.color)
+		elseif bdType == "tiles" then
+			local image = v.cachePatch(bdStyle.image)
+			local scale = bdSize / image.width
+			local drawScaled = v.drawScaled
+
+			for x = l, l + w - 2 * bdSize, bdSize do
+				drawScaled(x, t, scale, image)
+			end
+
+			local x = l + w - bdSize
+			for y = t, t + h - 2 * bdSize, bdSize do
+				drawScaled(x, y, scale, image)
+			end
+
+			local y = t + h - bdSize
+			for x = l + bdSize, l + w - bdSize, bdSize do
+				drawScaled(x, y, scale, image)
+			end
+
+			for y = t + bdSize, t + h - bdSize, bdSize do
+				drawScaled(l, y, scale, image)
+			end
+		end
+	end
+
+	local bgStyle = style.background
+	local bgType = bgStyle.type
+	if bgType == "color" then
+		v.drawFill(
+			(l     + bdSize) / FU,
+			(t     + bdSize) / FU,
+			(w - 2 * bdSize) / FU,
+			(h - 2 * bdSize) / FU,
+			bgStyle.color
+		)
+	elseif bgType == "image" then
+		local image = v.cachePatch(bgStyle.image)
+
+		v.drawStretched(
+			l + bdSize,
+			t + bdSize,
+			(w - 2 * bdSize) / image.width,
+			(h - 2 * bdSize) / image.height,
+			image
+		)
+	elseif bgType == "tiles" then
+		local image = v.cachePatch(bgStyle.image)
+		local size = bgStyle.imageSize
+		local scale = size / image.width
+		local drawScaled = v.drawScaled
+		local b = t + h - 1
+		local r = l + w - 1
+
+		for y = t, b, size do
+			for x = l, r, size do
+				drawScaled(x, y, scale, image)
+			end
+		end
 	end
 end
 

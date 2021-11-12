@@ -8,6 +8,14 @@ local cv_mousesens = CV_FindVar("mousesens")
 local cv_mouseysens = CV_FindVar("mouseysens")
 
 
+---@class ljgui.Mouse
+---
+---@field x fixed_t
+---@field y fixed_t
+---@field oldX fixed_t
+---@field oldY fixed_t
+---
+---@field image string
 local Mouse = gui.extend{}
 gui.Mouse = Mouse
 
@@ -16,12 +24,19 @@ function Mouse:__init()
 	self.x, self.y = 0, 0
 	self.oldX, self.oldY = self.x, self.y
 
+	self:setImage("LJGUI_CURSOR")
+
 	--self.oldAngle = 0
 	--self.oldAiming = 0
 end
 
 function Mouse:move(x, y)
 	self.x, self.y = x, y
+end
+
+---@param image string Name of the patch used to draw the cursor
+function Mouse:setImage(image)
+	self.image = image
 end
 
 function Mouse:updatePosition()
@@ -33,13 +48,13 @@ function Mouse:updatePosition()
 	local borderWidth  = (v.width()  - centerWidth ) / 2
 	local borderHeight = (v.height() - centerHeight) / 2
 
-	I_SetMouseGrab(false) -- !!! DON'T DO THAT ALL THE TIME
+	-- input.setMouseGrab(false) -- !!! DON'T DO THAT ALL THE TIME
 
-	local x, y = I_GetCursorPosition()
+	local x, y = input.getCursorPosition()
 	x = min(max(x - borderWidth , 0), centerWidth)
 	y = min(max(y - borderHeight, 0), centerHeight)
-	x = FixedMul(x * FU, FixedDiv(320, centerWidth))
-	y = FixedMul(y * FU, FixedDiv(200, centerHeight))
+	x = x * FU / v.dupx()
+	y = y * FU / v.dupy()
 
 	self:move(x, y)
 end
@@ -82,22 +97,16 @@ end
 	--self.oldAngle, self.oldAiming = cmd.angleturn, cmd.aiming
 end*/
 
+---@param item ljgui.Item
+---@return boolean
+function Mouse:isInsideItem(item)
+	return item:isPointInside(self.x, self.y)
+end
+
+---@param item ljgui.Item
+---@return ljgui.Item?
 function Mouse:findPointedItem(item)
-	local pointed = false
-	local x = self.x
-	local l = item.cache_left
-	local r = l + item.width
-
-	if x >= l and x < r then
-		local t = item.cache_top
-		local b = t + item.height
-
-		if self.y >= t and self.y < b then
-			pointed = true
-		end
-	end
-
-	if not pointed then
+	if item.ignoresMouse or not self:isInsideItem(item) then
 		return nil
 	end
 
@@ -117,25 +126,52 @@ function Mouse:findPointedItem(item)
 end
 
 function Mouse:updateHovering()
-	local pointedItem = self:findPointedItem(gui.screen)
+	local oldItem = self.pointedItem
+	local newItem = self:findPointedItem(gui.root)
+	local moved = (self.x ~= self.oldX or self.y ~= self.oldY)
 
-	if pointedItem ~= self.pointedItem then
-		if self.pointedItem and self.pointedItem.onMouseLeave and self.pointedItem.parent then
-			self.pointedItem:onMouseLeave(self)
-		end
-
-		if pointedItem and pointedItem.onMouseEnter then
-			pointedItem:onMouseEnter(self)
-		end
-
-		self.pointedItem = pointedItem
+	if moved and oldItem and oldItem.parent and oldItem.onMouseMove then
+		oldItem:onMouseMove(self)
+		newItem = self:findPointedItem(gui.root)
 	end
 
-	if (self.x ~= self.oldX or self.y ~= self.oldY)
-	and pointedItem and pointedItem.onMouseMove then
-		pointedItem:onMouseMove(self)
+	self.pointedItem = newItem
+
+	if newItem ~= oldItem then
+		if oldItem and oldItem.parent and oldItem.onMouseLeave then
+			oldItem:onMouseLeave(self)
+		end
+
+		if newItem and newItem.onMouseEnter then
+			newItem:onMouseEnter(self)
+		end
+
+		if moved and newItem and newItem.onMouseMove then
+			newItem:onMouseMove(self)
+		end
 	end
 end
+
+-- function Mouse:updateHovering()
+-- 	local pointedItem = self:findPointedItem(gui.root)
+
+-- 	if pointedItem ~= self.pointedItem then
+-- 		if self.pointedItem and self.pointedItem.onMouseLeave and self.pointedItem.parent then
+-- 			self.pointedItem:onMouseLeave(self)
+-- 		end
+
+-- 		if pointedItem and pointedItem.onMouseEnter then
+-- 			pointedItem:onMouseEnter(self)
+-- 		end
+
+-- 		self.pointedItem = pointedItem
+-- 	end
+
+-- 	if (self.x ~= self.oldX or self.y ~= self.oldY)
+-- 	and pointedItem and pointedItem.onMouseMove then
+-- 		pointedItem:onMouseMove(self)
+-- 	end
+-- end
 
 function Mouse:updateClicking()
 	local wasLeftPressed = self.leftPressed
@@ -163,8 +199,9 @@ function Mouse:update()
 	self:updateClicking()
 end
 
+---@param v videolib
 function Mouse:draw(v)
-	local patch = v.cachePatch("LJGUI_CURSOR")
-	--v.draw(self.x / FU, self.y / FU, patch, V_NOSCALESTART | V_NOSCALEPATCH)
-	--v.draw(self.x / FU, self.y / FU, patch)
+	local patch = v.cachePatch(self.image)
+	local x, y = gui.greenToReal(v, self.x, self.y)
+	v.draw(x, y, patch, V_NOSCALEPATCH)
 end

@@ -1,4 +1,5 @@
 local menulib = ljrequire "menulib"
+local gui = ljrequire "ljgui"
 
 
 local FU = FRACUNIT
@@ -238,6 +239,32 @@ local function loadSprites(v)
 	maps.spritesnotloaded = false
 end
 
+---@param v videolib
+---@param id integer
+---@param x fixed_t
+---@param y fixed_t
+---@param scale? fixed_t
+---@param flags? integer
+function maps.drawTile(v, id, x, y, scale, flags)
+	scale = $ or FU
+	local realscale = scale * 16 / maps.renderscale
+	flags = $ or 0
+
+	local def = maps.tiledefs[id]
+	local frame = (maps.time % def.animlen) / def.animspd + 1
+	local sprite = def.anim[frame]
+	local offsetx = FixedMul(def.offsetx[frame], realscale)
+	local offsety = FixedMul(def.offsety[frame], realscale)
+
+	v.drawScaled(
+		x - scale * 8 + offsetx,
+		y - scale * 8 + offsety,
+		FixedMul(def.scale, realscale),
+		sprite,
+		def.flags | flags
+	)
+end
+
 local function drawBackground(v, p, scrollx, scrolly)
 	if maps.map.backgroundtype == 1 then -- Picture
 		local background = maps.backgrounds[maps.map.background]
@@ -285,7 +312,58 @@ local function drawBackground(v, p, scrollx, scrolly)
 	end
 end
 
-local function drawBuilder(v, p, scrollx, scrolly)
+---@param v videolib
+---@param layer integer
+---@param scrollx fixed_t
+---@param scrolly fixed_t
+local function drawBuilders(v, layer, scrollx, scrolly)
+	for i = 1, #maps.pp do
+		local p = maps.pp[i]
+		if p.builder and p.builderlayer == layer then
+			if p.builderx * TILESIZE < scrollx
+			or p.builderx * TILESIZE >= scrollx + maps.SCREEN_WIDTH
+			or p.buildery * TILESIZE < scrolly
+			or p.buildery * TILESIZE >= scrolly + maps.SCREEN_HEIGHT then
+				return
+			end
+
+			local owner = p.owner ~= nil and players[p.owner] or nil
+			local drawx = OFFSETX + (p.builderx * TILESIZE - scrollx) * maps.renderscale
+			local drawy = OFFSETY + (p.buildery * TILESIZE - scrolly) * maps.renderscale
+
+			if p.buildertile ~= nil then
+				local scale = FU * maps.renderscale / 16
+				local flags = maps.sinCycle(maps.time, 2, 8, TICRATE) << V_ALPHASHIFT
+				local half = maps.renderscale * TILESIZE / 2
+				maps.drawTile(v, p.buildertile, drawx + half, drawy + half, scale, flags)
+			end
+
+			local cursorsprite = v.cachePatch("MAPS_EDITOR_CURSOR")
+			v.drawScaled(
+				drawx,
+				drawy,
+				TILESIZE * maps.renderscale / cursorsprite.width,
+				cursorsprite,
+				0,
+				v.getColormap(nil, owner and owner.skincolor or SKINCOLOR_RED)
+			)
+
+			if maps.client.player == p and p.buildermode.id == "pen" then
+				local pensprite = p.buildermode.penmode == 2 and "ERASER" or "PEN"
+				pensprite = v.cachePatch("MAPS_EDITOR_" .. pensprite)
+
+				local mouse = gui.root.mouse
+				v.drawScaled(mouse.x, mouse.y, maps.renderscale * FU/32, pensprite)
+			end
+		end
+	end
+end
+
+---@param v videolib
+---@param p maps.Player
+---@param scrollx fixed_t
+---@param scrolly fixed_t
+local function drawBuilderOverlays(v, p, scrollx, scrolly)
 	local owner = p.owner ~= nil and players[p.owner] or nil
 
 	if p.builderx * TILESIZE < scrollx
@@ -295,46 +373,31 @@ local function drawBuilder(v, p, scrollx, scrolly)
 		return
 	end
 
-	local drawx = OFFSETX + (p.builderx * TILESIZE - scrollx) * maps.renderscale
-	local drawy = OFFSETY + (p.buildery * TILESIZE - scrolly) * maps.renderscale
+	-- local drawx = OFFSETX + (p.builderx * TILESIZE - scrollx) * maps.renderscale
+	-- local drawy = OFFSETY + (p.buildery * TILESIZE - scrolly) * maps.renderscale
 
-	local cursorname = "MAPS_EDITOR_CURSOR"
-	local tile = p.tile
-	local i = p.builderx + p.buildery * maps.map.w
-	if p.erase or p.erase == nil and maps.map[p.builderlayer][i] ~= 1 then
-		cursorname = "MAPS_EDITOR_CURSOR_DELETE"
-	else
-		for layer = p.builderlayer + 1, 4 do
-			if maps.map[layer][i] ~= 1 then
-				cursorname = "MAPS_EDITOR_CURSOR_HIDE"
-				break
-			end
-		end
+	-- local cursorsprite = v.cachePatch("MAPS_EDITOR_CURSOR_HIDE")
+	-- v.drawScaled(
+	-- 	drawx,
+	-- 	drawy,
+	-- 	TILESIZE * maps.renderscale / cursorsprite.width,
+	-- 	cursorsprite,
+	-- 	0,
+	-- 	v.getColormap(nil, owner and owner.skincolor or SKINCOLOR_RED)
+	-- )
 
-		if tile ~= nil then
-			local animframe = maps.time % maps.tiledefs_animlen[tile]
-			animframe = $ / maps.tiledefs_animspd[tile] + 1
+	if maps.client.player == p and p.buildermode.id == "pen" then
+		local mouse = gui.root.mouse
+		local scale = maps.renderscale * FU/32
+		local spritesuffix = p.buildermode.penmode == 2 and "ERASER" or "PEN"
 
-			v.drawScaled(
-				drawx + maps.tiledefs_offsetx[tile][animframe],
-				drawy + maps.tiledefs_offsety[tile][animframe],
-				maps.tiledefs_scale[tile],
-				maps.tiledefs_anim[tile][animframe],
-				maps.tiledefs_flags[tile] | (maps.sinCycle(maps.time, 2, 8, TICRATE) << V_ALPHASHIFT)
-			)
-		end
+		local pensprite = v.cachePatch("MAPS_EDITOR_" .. spritesuffix)
+		local trans = maps.sinCycle(maps.time, 5, 9, TICRATE) << V_ALPHASHIFT
+		v.drawScaled(mouse.x, mouse.y, scale, pensprite, trans)
+
+		local outlinesprite = v.cachePatch("MAPS_EDITOR_" .. spritesuffix .. "_OUTLINE")
+		v.drawScaled(mouse.x, mouse.y, scale, outlinesprite)
 	end
-
-	local cursorsprite = v.cachePatch(cursorname)
-
-	v.drawScaled(
-		drawx,
-		drawy,
-		TILESIZE * maps.renderscale / cursorsprite.width,
-		cursorsprite,
-		0,
-		v.getColormap(nil, owner and owner.skincolor or SKINCOLOR_RED)
-	)
 end
 
 local function drawObjects(v, scrollx, scrolly)
@@ -521,6 +584,8 @@ local function drawMap(v, p)
 		drawLayer(v, 1, scrollx, scrolly, p)
 	end
 
+	drawBuilders(v, 1, scrollx, scrolly)
+
 	-- Collision background layer
 	if not visiblelayer or visiblelayer == 2 then
 		drawLayer(v, 2, scrollx, scrolly, p)
@@ -529,10 +594,14 @@ local function drawMap(v, p)
 	-- Draw objects
 	drawObjects(v, scrollx, scrolly)
 
+	drawBuilders(v, 2, scrollx, scrolly)
+
 	-- Collision foreground layer
 	if not visiblelayer or visiblelayer == 3 then
 		drawLayer(v, 3, scrollx, scrolly, p)
 	end
+
+	drawBuilders(v, 3, scrollx, scrolly)
 
 	-- Foreground layer
 	if not visiblelayer or visiblelayer == 4 then
@@ -541,11 +610,13 @@ local function drawMap(v, p)
 
 	drawDeadPlayers(v, scrollx, scrolly)
 
+	drawBuilders(v, 4, scrollx, scrolly)
+
 	-- Draw builders
 	for i = 1, #maps.pp do
 		local p = maps.pp[i]
 		if p.builder then
-			drawBuilder(v, p, scrollx, scrolly)
+			drawBuilderOverlays(v, p, scrollx, scrolly)
 		end
 	end
 

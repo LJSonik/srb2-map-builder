@@ -1,15 +1,20 @@
 local gui = ljrequire "ljgui.common"
 
 
-local Screen, base = gui.extend(gui.Item)
-gui.Screen = Screen
+local Root, base = gui.extend(gui.Item)
+gui.Root = Root
 
 
-function Screen:__init(v)
+function Root:__init()
 	base.__init(self)
 
 	self:move(0, 0)
-	self:setSize(320 * FRACUNIT, 200 * FRACUNIT)
+	self:resize(320*FU, 200*FU)
+
+	local main = gui.Area()
+	self.main = self:attach(main)
+	main:move(0, 0)
+	main:resize(320*FU, 200*FU)
 
 	self.focusedItem = nil
 
@@ -17,7 +22,7 @@ function Screen:__init(v)
 	self.mouse:move(self.width / 2, self.height / 2)
 end
 
-function Screen:update()
+function Root:update()
 	local item = self.focusedItem
 	if item and item.enabled and item.handleEvents then
 		item:handleEvents()
@@ -26,7 +31,7 @@ function Screen:update()
 	self.mouse:update()
 end
 
-function Screen:draw(v)
+function Root:draw(v)
 	self:drawChildren(v)
 	self.mouse:draw(v)
 end

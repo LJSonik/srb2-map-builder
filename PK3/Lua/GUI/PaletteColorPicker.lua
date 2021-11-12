@@ -10,7 +10,7 @@ maps.PaletteColorPicker = Picker
 
 function Picker:setup()
 	self.cellSize = 4 * FU
-	self:setSize(16 * self.cellSize, 16 * self.cellSize)
+	self:resize(16 * self.cellSize, 16 * self.cellSize)
 end
 
 function Picker:handleEvents(cmd)
@@ -20,8 +20,8 @@ function Picker:handleEvents(cmd)
 end
 
 function Picker:onMouseMove(mouse)
-	local x = (mouse.x - self.cache_left) / self.cellSize
-	local y = (mouse.y - self.cache_top) / self.cellSize
+	local x = (mouse.x - self.left) / self.cellSize
+	local y = (mouse.y - self.top ) / self.cellSize
 	self.pointedColor = x + y * 16
 end
 
@@ -48,7 +48,7 @@ local function drawRectangleBorders(v, l, t, w, h, borderSize, color)
 end
 
 function Picker:draw(v)
-	local l, t = self.cache_left, self.cache_top
+	local l, t = self.left, self.top
 	local w, h = self.width, self.height
 	local cellSize = self.cellSize
 

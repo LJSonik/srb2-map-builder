@@ -15,6 +15,8 @@
 ---
 ---@field fullresendneeded boolean
 ---@field fullresendtime   integer
+---
+---@field panning boolean
 
 
 ---@type maps.Client

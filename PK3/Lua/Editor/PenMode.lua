@@ -127,8 +127,13 @@ maps.addEditorMode{
 		end
 	end,
 
-	on_key_down = function(p, key)
-		if G_KeyNumToString(key) == "MOUSE1" then
+	---@param key keyevent_t
+	---@param p maps.Player
+	---@return boolean
+	on_key_down = function(key, p)
+		if maps.handleClientEditorMovementKeyDown(key) then
+			return true
+		elseif key.name == "MOUSE1" then
 			local cl = maps.client
 			local mode = p.buildermode
 			local pos = p.builderx + p.buildery * cl.map.w
@@ -138,12 +143,20 @@ maps.addEditorMode{
 			elseif not maps.isStackFull(cl.map, pos) then
 				mode.penmode = 1 -- Build
 			end
+
+			return true
 		end
 	end,
 
-	on_key_up = function(p, key)
-		if G_KeyNumToString(key) == "MOUSE1" then
+	---@param key keyevent_t
+	---@param p maps.Player
+	---@return boolean
+	on_key_up = function(key, p)
+		if maps.handleClientEditorMovementKeyUp(key) then
+			return true
+		elseif key.name == "MOUSE1" then
 			p.buildermode.penmode = 0
+			return true
 		end
 	end
 }

@@ -9,6 +9,9 @@ local custominput = ljrequire "custominput"
 local bs = ljrequire "bytestream"
 
 
+local FU = FRACUNIT
+
+
 local TILE_SIZE = 8
 local TILE_GAP = 2
 local HIGHLIGHT_SCALE = 2 * FU
@@ -19,10 +22,10 @@ local CAT_HIGHLIGHT_SCALE = 2 * FU
 
 
 local function closeTilePicker()
-	local picker = gui.screen.tilePicker
+	local picker = gui.root.main.tilePicker
 	picker:unfocus()
 	picker:detach()
-	gui.screen.tilePicker = nil
+	gui.root.main.tilePicker = nil
 
 	maps.closeEditorMenu()
 end
@@ -140,45 +143,47 @@ function TileButton:draw(v)
 
 	local picker = self.parent
 
-	local def = maps.tiledefs[self.slot.tiledefid]
+	local drawx = self.left + TILE_GAP * FU/2 + TILE_SIZE * FU/2
+	local drawy = self.top  + TILE_GAP * FU/2 + TILE_SIZE * FU/2
+	local scale = TILE_SIZE * FU/16
 
-	local drawx = self.left + TILE_GAP * FU / 2
-	local drawy = self.top + TILE_GAP * FU / 2
+	local flags
+	if self == picker.pointedButton then
+		local highlightscale = maps.sinCycle(maps.time, HIGHLIGHT_SCALE, FU, TICRATE)
+		scale = FixedMul($, highlightscale)
+		flags = maps.sinCycle(maps.time, 0, 5, TICRATE) << V_ALPHASHIFT
+	else
+		flags = V_50TRANS
+	end
 
-	local animframe = (maps.time % def.animlen) / def.animspd + 1
-	local sprite = def.anim[animframe]
-	local flags = def.flags
+	-- local offsetx = def.offsetx[animframe] * TILE_SIZE / maps.renderscale
+	-- local offsety = def.offsety[animframe] * TILE_SIZE / maps.renderscale
 
-	local offsetx = def.offsetx[animframe] * TILE_SIZE / maps.renderscale
-	local offsety = def.offsety[animframe] * TILE_SIZE / maps.renderscale
+	-- drawx = $ + def.editspanw * TILE_GAP * FU / 2
+	-- drawy = $ + def.editspanh * TILE_GAP * FU / 2
 
-	local scale = TILE_SIZE * def.scale / maps.renderscale
-
-	/*drawx = $ + def.editspanw * TILE_GAP * FU / 2
-	drawy = $ + def.editspanh * TILE_GAP * FU / 2
-
-	drawx = $ + (def.editspanw - def.spanw) * (TILE_SIZE + TILE_GAP) * FU / 2
-	drawy = $ + (def.editspanh - def.spanh) * (TILE_SIZE + TILE_GAP) * FU / 2*/
+	-- drawx = $ + (def.editspanw - def.spanw) * (TILE_SIZE + TILE_GAP) * FU / 2
+	-- drawy = $ + (def.editspanh - def.spanh) * (TILE_SIZE + TILE_GAP) * FU / 2
 
 	--drawx = $ + (TILE_SIZE * FU - sprite.width  * scale) / 2
 	--drawy = $ + (TILE_SIZE * FU - sprite.height * scale) / 2
 
-	if self == picker.pointedButton then
-		local highlightscale = maps.sinCycle(maps.time, HIGHLIGHT_SCALE, FU, TICRATE)
-		scale = FixedMul($, highlightscale)
-		flags = $ | (maps.sinCycle(maps.time, 0, 5, TICRATE) << V_ALPHASHIFT)
+	-- if self == picker.pointedButton then
+	-- 	local highlightscale = maps.sinCycle(maps.time, HIGHLIGHT_SCALE, FU, TICRATE)
+	-- 	scale = FixedMul($, highlightscale)
+	-- 	flags = $ | (maps.sinCycle(maps.time, 0, 5, TICRATE) << V_ALPHASHIFT)
 
-		local extrasize = (highlightscale - FU) * TILE_SIZE / 2
-		drawx = $ - extrasize + FixedMul(offsetx, highlightscale)
-		drawy = $ - extrasize + FixedMul(offsety, highlightscale)
-	else
-		drawx = $ + offsetx
-		drawy = $ + offsety
+	-- 	local extrasize = (highlightscale - FU) * TILE_SIZE / 2
+	-- 	drawx = $ - extrasize + FixedMul(offsetx, highlightscale)
+	-- 	drawy = $ - extrasize + FixedMul(offsety, highlightscale)
+	-- else
+	-- 	drawx = $ + offsetx
+	-- 	drawy = $ + offsety
 
-		flags = $ | V_50TRANS
-	end
+	-- 	flags = $ | V_50TRANS
+	-- end
 
-	v.drawScaled(drawx, drawy, scale, sprite, flags)
+	maps.drawTile(v, self.slot.tiledefid, drawx, drawy, scale, flags)
 end
 
 
@@ -290,13 +295,13 @@ function Picker:setupCategoryPicker()
 		local button = CategoryButton()
 
 		button:move(drawX, drawY)
-		button:setSize(CAT_SIZE * FU, CAT_SIZE * FU)
+		button:resize(CAT_SIZE * FU, CAT_SIZE * FU)
 		button.categoryIndex = categoryIndex
 
 		self.categoryButtons[categoryIndex] = self:attach(button)
 
 		drawX = $ + drawStep
-		if drawX > gui.screen.width - CAT_GAP - CAT_SIZE then
+		if drawX > gui.root.main.width - CAT_GAP - CAT_SIZE then
 			drawX = CAT_GAP * FU
 			drawY = $ + drawStep
 		end
@@ -334,7 +339,7 @@ function Picker:setupTilePicker()
 
 			button:move(drawX, drawY)
 			local size = (TILE_SIZE + TILE_GAP) * FU
-			button:setSize(size, size)
+			button:resize(size, size)
 
 			button.tileGridX, button.tileGridY = x, y
 
@@ -354,7 +359,7 @@ end
 
 function Picker:setup()
 	self:move(0, 0)
-	self:setSize(gui.screen.width, gui.screen.height)
+	self:resize(gui.root.main.width, gui.root.main.height)
 
 	self.prevButtons = gui.cmd.buttons
 	self.hkeyrepeat, self.vkeyrepeat = TICRATE / 8, TICRATE / 8

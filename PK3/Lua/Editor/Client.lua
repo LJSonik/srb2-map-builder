@@ -35,66 +35,40 @@ local function handleClientEditorKeyboardMovement(p, cmd)
 	local cl = maps.client
 
 	local dx, dy = 0, 0
-	local left, right, up, down = maps.getLocalKeys(cmd)
 
-	if cl.inputeaten then
-		cl.hkeyrepeat, cl.vkeyrepeat = TICRATE / 4, TICRATE / 4
-		return 0, 0
-	end
-
-	if left then
-		if cl.prevleft then
-			if cl.hkeyrepeat == 1 then
-				cl.hkeyrepeat = p.builderspeed
-				dx = -1
-			else
-				cl.hkeyrepeat = $ - 1
-			end
-		else
-			cl.hkeyrepeat = TICRATE / 4
+	if cl.leftpressed then
+		if cl.hkeyrepeat == 1 then
+			cl.hkeyrepeat = p.builderspeed
 			dx = -1
+		else
+			cl.hkeyrepeat = $ - 1
 		end
 	end
 
-	if right then
-		if cl.prevright then
-			if cl.hkeyrepeat == 1 then
-				cl.hkeyrepeat = p.builderspeed
-				dx = 1
-			else
-				cl.hkeyrepeat = $ - 1
-			end
-		else
-			cl.hkeyrepeat = TICRATE / 4
+	if cl.rightpressed then
+		if cl.hkeyrepeat == 1 then
+			cl.hkeyrepeat = p.builderspeed
 			dx = 1
+		else
+			cl.hkeyrepeat = $ - 1
 		end
 	end
 
-	if up then
-		if cl.prevup then
-			if cl.vkeyrepeat == 1 then
-				cl.vkeyrepeat = p.builderspeed
-				dy = -1
-			else
-				cl.vkeyrepeat = $ - 1
-			end
-		else
-			cl.vkeyrepeat = TICRATE / 4
+	if cl.uppressed then
+		if cl.vkeyrepeat == 1 then
+			cl.vkeyrepeat = p.builderspeed
 			dy = -1
+		else
+			cl.vkeyrepeat = $ - 1
 		end
 	end
 
-	if down then
-		if cl.prevdown then
-			if cl.vkeyrepeat == 1 then
-				cl.vkeyrepeat = p.builderspeed
-				dy = 1
-			else
-				cl.vkeyrepeat = $ - 1
-			end
-		else
-			cl.vkeyrepeat = TICRATE / 4
+	if cl.downpressed then
+		if cl.vkeyrepeat == 1 then
+			cl.vkeyrepeat = p.builderspeed
 			dy = 1
+		else
+			cl.vkeyrepeat = $ - 1
 		end
 	end
 
@@ -103,9 +77,10 @@ end
 
 local function handleClientEditorMouseMovement(p, cmd)
 	local cl = maps.client
-	local mouse = gui.screen.mouse
+	local mouse = gui.root.mouse
 
-	if mouse.x == mouse.oldX and mouse.y == mouse.oldY then
+	if mouse.x == mouse.oldX and mouse.y == mouse.oldY
+	or gui.root.main.editorPanel then
 		return 0, 0
 	end
 
@@ -162,24 +137,57 @@ function maps.handleClientEditorMovement(p, cmd)
 	end
 end
 
-function maps.updateClientEditorCamera(p)
+local function handleClientEditorMovementKey(key, down)
 	local cl = maps.client
-	local mouse = gui.screen.mouse
-	local speed = 16 * maps.TILESIZE / p.renderscale
+	key = key.name
 
-	if mouse.x <= 0 then
-		cl.scrollx = max($ - speed, 0)
-	elseif mouse.x >= maps.SCREEN_WIDTH - 1 then
-		local limit = maps.map.w * maps.TILESIZE - maps.SCREEN_WIDTH / p.renderscale
-		cl.scrollx = min($ + speed, limit)
+	if key == "LEFT ARROW" then
+		cl.leftpressed = down
+		cl.hkeyrepeat = TICRATE / 4
+		return true
+	elseif key == "RIGHT ARROW" then
+		cl.rightpressed = down
+		cl.hkeyrepeat = TICRATE / 4
+		return true
+	elseif key == "UP ARROW" then
+		cl.uppressed = down
+		cl.vkeyrepeat = TICRATE / 4
+		return true
+	elseif key == "DOWN ARROW" then
+		cl.downpressed = down
+		cl.vkeyrepeat = TICRATE / 4
+		return true
+	else
+		return false
 	end
+end
 
-	if mouse.y <= 0 then
-		cl.scrolly = max($ - speed, 0)
-	elseif mouse.y >= maps.SCREEN_HEIGHT - 1 then
-		local limit = maps.map.h * maps.TILESIZE - maps.SCREEN_HEIGHT / p.renderscale
-		cl.scrolly = min($ + speed, limit)
-	end
+function maps.handleClientEditorMovementKeyDown(key)
+	handleClientEditorMovementKey(key, true)
+end
+
+function maps.handleClientEditorMovementKeyUp(key)
+	handleClientEditorMovementKey(key, false)
+end
+
+function maps.updateClientEditorCamera(p)
+	-- local cl = maps.client
+	-- local mouse = gui.root.mouse
+	-- local speed = 16 * maps.TILESIZE / p.renderscale
+
+	-- if mouse.x <= 0 then
+	-- 	cl.scrollx = max($ - speed, 0)
+	-- elseif mouse.x >= maps.SCREEN_WIDTH - 1 then
+	-- 	local limit = maps.map.w * maps.TILESIZE - maps.SCREEN_WIDTH / p.renderscale
+	-- 	cl.scrollx = min($ + speed, limit)
+	-- end
+
+	-- if mouse.y <= 0 then
+	-- 	cl.scrolly = max($ - speed, 0)
+	-- elseif mouse.y >= maps.SCREEN_HEIGHT - 1 then
+	-- 	local limit = maps.map.h * maps.TILESIZE - maps.SCREEN_HEIGHT / p.renderscale
+	-- 	cl.scrolly = min($ + speed, limit)
+	-- end
 end
 
 function maps.backupEditorState(p)
@@ -242,6 +250,8 @@ function maps.enterClientEditor()
 	cl.fullresendneeded = false
 	cl.fullresendtime = 0
 
+	cl.panning = false
+
 	maps.initialiseGui()
 end
 
@@ -259,7 +269,19 @@ end
 
 function maps.updateClientEditor(p, cmd, v)
 	local cl = maps.client
+	local mouse = gui.root.mouse
 	local mode = maps.editormodes[p.buildermode.id]
+
+	if cl.panning then
+		cl.scrollx = $ - (mouse.x - mouse.oldX) / p.renderscale
+		cl.scrolly = $ - (mouse.y - mouse.oldY) / p.renderscale
+
+		local maxX = maps.map.w * maps.TILESIZE - maps.SCREEN_WIDTH  / p.renderscale
+		local maxY = maps.map.h * maps.TILESIZE - maps.SCREEN_HEIGHT / p.renderscale
+
+		cl.scrollx = min(max($, 0), maxX)
+		cl.scrolly = min(max($, 0), maxY)
+	end
 
 	if not cl.inputeaten then
 		if cmd.buttons & BT_WEAPONPREV and not (maps.client.prevbuttons & BT_WEAPONPREV) then

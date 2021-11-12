@@ -2,71 +2,93 @@ local gui = ljrequire "ljgui"
 
 
 function maps.initialiseGui(v)
-	gui.screen = gui.Screen(v)
+	gui.root = gui.Root(v)
 
 	local menu = maps.EditorMenu()
 	menu:setup()
-	gui.screen.editorMenu = gui.screen:attach(menu)
+	gui.root.main.editorMenu = gui.root:attach(menu)
 end
 
 function maps.uninitialiseGui()
-	gui.screen = nil
+	gui.root = nil
 end
 
 function maps.updateGui(v, cmd)
-	if not gui.screen then return end -- !!!
+	local root = gui.root
+	if not root then return end -- !!!
 
 	gui.v = v
 	gui.cmd = cmd
 
-	if gui.screen.focusedItem ~= nil then
+	if root.focusedItem ~= nil then
 		maps.client.inputeaten = true
 	end
 
-	gui.screen:update()
+	root:update()
+	maps.updatePanel()
 
-	/*if gui.screen.editorMenu.enabled or gui.screen.tilePicker then
+	/*if root.main.editorMenu.enabled or root.main.tilePicker then
 		cmd.forwardmove = 0
 		cmd.sidemove = 0
 		cmd.buttons = 0
 	end*/
 end
 
+---@param key keyevent_t
 function maps.handleKeyDown(key)
-	--gui.handleKeyDown(key)
-
 	local cl = maps.client
-	if cl then
-		local mode = cl.player.buildermode
-		if mode then
-			local modedef = maps.editormodes[mode.id]
-			if modedef.on_key_down then
-				modedef.on_key_down(cl.player, key)
-			end
+	if not cl then return end
+
+	local root = gui.root
+
+	gui.handleKeyDown(key)
+	if root and (root.main.editorPanel or root.main.tilePicker) then
+		return
+	end
+
+	if key.name == "SPACE" then
+		cl.panning = true
+	end
+
+	local mode = cl.player.buildermode
+	if mode then
+		local modedef = maps.editormodes[mode.id]
+		if modedef.on_key_down then
+			modedef.on_key_down(key, cl.player)
 		end
 	end
 end
 
+---@param key keyevent_t
 function maps.handleKeyUp(key)
-	--gui.handleKeyUp(key)
-
 	local cl = maps.client
-	if cl then
-		local mode = cl.player.buildermode
-		if mode then
-			local modedef = maps.editormodes[mode.id]
-			if modedef.on_key_up then
-				modedef.on_key_up(cl.player, key)
-			end
+	if not cl then return end
+
+	local root = gui.root
+
+	gui.handleKeyUp(key)
+	if root and (root.main.editorPanel or root.main.tilePicker) then
+		return
+	end
+
+	if key.name == "SPACE" then
+		cl.panning = false
+	end
+
+	local mode = cl.player.buildermode
+	if mode then
+		local modedef = maps.editormodes[mode.id]
+		if modedef.on_key_up then
+			modedef.on_key_up(key, cl.player)
 		end
 	end
 end
 
 function maps.drawGui(v)
-	if not gui.screen then return end -- !!!
+	if not gui.root then return end -- !!!
 
 	gui.v = v
 	gui.cmd = cmd
 
-	gui.screen:draw(v)
+	gui.root:draw(v)
 end

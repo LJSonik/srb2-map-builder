@@ -12,6 +12,8 @@ function gui.extend(parent)
 		class[k] = v
 	end
 
+	class.class = class
+
 	return setmetatable(class, {
 		__call = function(_, ...)
 			local object = setmetatable({}, objectMetatable)
@@ -27,13 +29,17 @@ end
 
 
 for _, filename in ipairs{
+	"Util.lua",
 	"Item.lua",
-	"Screen.lua",
+	"Root.lua",
 	"Area.lua",
+	"Text.lua",
+	"Image.lua",
+	"Grid.lua",
 	"Window.lua",
 	"Button.lua",
 	"Mouse.lua",
-	"Keyboard.lua"
+	"Keyboard.lua",
 } do
 	dofile("Libraries/ljgui/" .. filename)
 end
