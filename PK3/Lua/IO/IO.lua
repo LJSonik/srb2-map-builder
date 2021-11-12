@@ -293,7 +293,7 @@ end
 local function cleanupName(name)
 	-- The duplicate is intentional
 	for _, s in ipairs{"^Maps/", "^Maps/", "%.dat$", "%.map$"} do
- 		name = $:gsub(s, "")
+ 		name = name:gsub(s, "")
 	end
 
 	return "Maps/Maps/"..name..".map.dat"

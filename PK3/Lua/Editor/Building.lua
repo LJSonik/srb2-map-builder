@@ -358,7 +358,7 @@ end
 	end
 
 	-- Open tile picker
-	if bt & BT_USE and not (t.prevbuttons & BT_USE)
+	if bt & BT_SPIN and not (t.prevbuttons & BT_SPIN)
 		p.erase = nil
 		maps.openTilePicker(p)
 	end

@@ -73,8 +73,8 @@ end
 
 function maps.drawWheelMenu(v, owner, menudef, menu, level, cx, cy)
 	level = $ or 1
-	cx = $ or 160 * FU
-	cy = $ or 100 * FU
+	cx = $ or (160 * FU)
+	cy = $ or (100 * FU)
 
 	local sel = menu.selecteditems[level]
 

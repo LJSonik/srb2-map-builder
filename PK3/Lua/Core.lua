@@ -351,7 +351,7 @@ local function updateGame()
 
 				-- If the menu just closed
 				if not p.menu then
-					p.maps.prevbuttons = $ | BT_JUMP | BT_USE | BT_TOSSFLAG
+					p.maps.prevbuttons = $ | BT_JUMP | BT_SPIN | BT_TOSSFLAG
 				end
 			end
 		end
@@ -363,7 +363,7 @@ local function updateGame()
 
 				-- If the menu just closed
 				if not p.menu then
-					p.maps.prevbuttons = $ | BT_JUMP | BT_USE | BT_TOSSFLAG
+					p.maps.prevbuttons = $ | BT_JUMP | BT_SPIN | BT_TOSSFLAG
 				end
 			end
 		end

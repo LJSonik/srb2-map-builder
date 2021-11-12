@@ -493,8 +493,8 @@ local function handleControls(p, t, bt, left, right, up, down)
 		end
 	end
 
-	if bt & BT_USE then
-		if t.prevbuttons & BT_USE then
+	if bt & BT_SPIN then
+		if t.prevbuttons & BT_SPIN then
 			if o.state == "spindash" then
 				if leveltime % 5 == 0 then
 					if o.spindashcharge < maps.skindefs[p.skin].maxspindashspeed then

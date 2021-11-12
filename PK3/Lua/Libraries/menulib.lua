@@ -288,7 +288,7 @@ local function handleVerticalMenu(p, menu, menustate)
 		menulib.close(p)
 
 	-- Back to previous menu
-	elseif bt & BT_USE and not (prevbt & BT_USE) then
+	elseif bt & BT_SPIN and not (prevbt & BT_SPIN) then
 		menulib.back(p)
 
 	-- Confirm
@@ -414,7 +414,7 @@ local function handleGridMenu(p, menu, menustate)
 		menulib.close(p)
 
 	-- Back to previous menu
-	elseif bt & BT_USE and not (prevbt & BT_USE) then
+	elseif bt & BT_SPIN and not (prevbt & BT_SPIN) then
 		menulib.back(p)
 
 	-- Confirm
@@ -628,14 +628,14 @@ function menulib.menuPosition(menu)
 	if x == nil then
 		x = 160 - menu.w / 2
 	elseif type(x) == "function" then
-		x = $(menu)
+		x = x(menu)
 	end
 
 	local y = menu.y
 	if y == nil then
 		y = 100 - menu.h / 2
 	elseif type(y) == "function" then
-		y = $(menu)
+		y = y(menu)
 	end
 
 	return x, y
@@ -749,7 +749,7 @@ local function drawVerticalMenu(v, p, menu, choice)
 
 	local tip = menu[choice].tip
 	if type(tip) == "function" then
-		tip = $(p, menustate)
+		tip = tip(p, menustate)
 	end
 	if not tip then return end
 	local tw = v.stringWidth(tip, V_ALLOWLOWERCASE, "small")

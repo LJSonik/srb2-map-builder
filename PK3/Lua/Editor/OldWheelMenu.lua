@@ -41,10 +41,10 @@ maps.editormenudef = {
 			action = function(owner)
 				local p = maps.getPlayer(owner)
 
-				if p.editorrenderscale ~= 16
+				if p.editorrenderscale ~= 16 then
 					p.editorrenderscale = $ * 2
 
-					if p.builder
+					if p.builder then
 						p.renderscale = p.editorrenderscale
 						maps.centerCamera(p)
 					end
@@ -61,10 +61,10 @@ maps.editormenudef = {
 			action = function(owner)
 				local p = maps.getPlayer(owner)
 
-				if p.editorrenderscale ~= 4
+				if p.editorrenderscale ~= 4 then
 					p.editorrenderscale = $ / 2
 
-					if p.builder
+					if p.builder then
 						p.renderscale = p.editorrenderscale
 						maps.centerCamera(p)
 					end
@@ -76,10 +76,10 @@ maps.editormenudef = {
 
 
 function maps.handleOldEditorWheelMenu(owner, t, bt, left, right, up, down)
-	if not owner return end
+	if not owner then return end
 
 	local p = maps.pp[owner.maps.player]
-	if maps.handleWheelMenu(maps.editormenudef, p.editormenu, owner, t, bt, left, right, up, down)
+	if maps.handleWheelMenu(maps.editormenudef, p.editormenu, owner, t, bt, left, right, up, down) then
 		p.editormenu = nil
 	end
 end

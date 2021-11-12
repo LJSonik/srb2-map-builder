@@ -72,7 +72,7 @@ function maps.handleWheelMenu(menudef, menu, owner, t, bt, left, right, up, down
 		menu.selectiontime = maps.time
 	end
 
-	if bt & BT_USE and not (t.prevbuttons & BT_USE) then
+	if bt & BT_SPIN and not (t.prevbuttons & BT_SPIN) then
 		if menu.level == 1 then
 			return true
 		else

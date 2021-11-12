@@ -228,13 +228,12 @@ function maps.switchEditorStateToClientSide()
 	maps.switchEditorStateToSide(true)
 end
 
-function maps.enterClientEditor(p)
-local p = maps.getPlayer(consoleplayer)
+function maps.enterClientEditor()
 	local cl = maps.client
 
 	cl.backup = nil
 
-	maps.centerClientCamera(p)
+	maps.centerClientCamera()
 
 	cl.prevleft, cl.prevright, cl.prevup, cl.prevdown = false, false, false, false
 	cl.prevbuttons = 0
@@ -269,7 +268,7 @@ function maps.updateClientEditor(p, cmd, v)
 
 				if p.builder then
 					p.renderscale = p.editorrenderscale
-					maps.centerClientCamera(p)
+					maps.centerClientCamera()
 				end
 			end
 		end
@@ -280,7 +279,7 @@ function maps.updateClientEditor(p, cmd, v)
 
 				if p.builder then
 					p.renderscale = p.editorrenderscale
-					maps.centerClientCamera(p)
+					maps.centerClientCamera()
 				end
 			end
 		end
@@ -288,7 +287,7 @@ function maps.updateClientEditor(p, cmd, v)
 		maps.updateClientEditorCamera(p)
 
 		if cmd.buttons & BT_SPIN and not (cl.prevbuttons & BT_SPIN) then
-			maps.openEditorMenu(v)
+			maps.openEditorMenu()
 		end
 	end
 

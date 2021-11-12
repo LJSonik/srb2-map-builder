@@ -8,10 +8,10 @@ maps.tilepickerdirty = false
 
 
 local function handleKeyRepeat(t, counter, waspressed, delay)
-	if not waspressed
+	if not waspressed then
 		t[counter] = 8
 		return true
-	elseif t[counter] == 1
+	elseif t[counter] == 1 then
 		t[counter] = delay
 		return true
 	else
@@ -30,7 +30,7 @@ local function handleCategoryPicker(p, t, bt, left, right, up, down)
 	local n = #maps.tilecategories
 	local category = p.category
 
-	if left and handleKeyRepeat(t, "hkeyrepeat", t.prevleft, p.builderspeed)
+	if left and handleKeyRepeat(t, "hkeyrepeat", t.prevleft, p.builderspeed) then
 		/*local columns = tilesPerLine()
 		repeat
 			category = ($ - 1) % columns ~= 0 and $ - 1 or $ + columns - 1
@@ -38,26 +38,26 @@ local function handleCategoryPicker(p, t, bt, left, right, up, down)
 		category = $ ~= 1 and $ - 1 or n
 	end
 
-	if right and handleKeyRepeat(t, "hkeyrepeat", t.prevright, p.builderspeed)
+	if right and handleKeyRepeat(t, "hkeyrepeat", t.prevright, p.builderspeed) then
 		/*local columns = tilesPerLine()
 		category = $ % columns ~= 0 and $ + 1 <= n and $ + 1 or ($ - 1) / columns * columns + 1*/
 		category = $ ~= n and $ + 1 or 1
 	end
 
-	if up and handleKeyRepeat(t, "vkeyrepeat", t.prevup, p.builderspeed)
+	if up and handleKeyRepeat(t, "vkeyrepeat", t.prevup, p.builderspeed) then
 		local columns = tilesPerLine()
 		repeat
 			category = $ > columns and $ - columns or $ + (n - 1) / columns * columns
 		until category <= n
 	end
 
-	if down and handleKeyRepeat(t, "vkeyrepeat", t.prevdown, p.builderspeed)
+	if down and handleKeyRepeat(t, "vkeyrepeat", t.prevdown, p.builderspeed) then
 		local columns = tilesPerLine()
 		category = $ + columns <= n and $ + columns or $ - ($ - 1) / columns * columns
 	end
 
 	-- Pick tile
-	if bt & BT_JUMP and not (t.prevbuttons & BT_JUMP)
+	if bt & BT_JUMP and not (t.prevbuttons & BT_JUMP) then
 		/*p.pickertile = (
 			category == p.prevcategory1 and p.prevpickertile1
 			or category == p.prevcategory2 and p.prevpickertile2
@@ -69,7 +69,7 @@ local function handleCategoryPicker(p, t, bt, left, right, up, down)
 	end
 
 	-- Close category picker
-	if bt & BT_USE and not (t.prevbuttons & BT_USE)
+	if bt & BT_SPIN and not (t.prevbuttons & BT_SPIN) then
 		maps.closeTilePicker(p)
 	end
 
@@ -77,11 +77,11 @@ local function handleCategoryPicker(p, t, bt, left, right, up, down)
 end
 
 local function setSlot(grid, x, y, slot)
-	while #grid < y
+	while #grid < y do
 		table.insert(grid, {})
 	end
 
-	while #grid[y] < x
+	while #grid[y] < x do
 		table.insert(grid[y], 0)
 	end
 
@@ -89,9 +89,9 @@ local function setSlot(grid, x, y, slot)
 end
 
 local function getLayoutUnderCursor(p)
-	if p.quickpickingtile
+	if p.quickpickingtile then
 		local tile = p.tilegrid[p.quickpickery][p.quickpickerx]
-		if tile > 1
+		if tile > 1 then
 			local def = maps.tiledefs[tile]
 			local category = maps.tilecategories[def.category]
 			return maps.getLayoutInGrid(category.grid, def.pickerx, def.pickery)
@@ -103,14 +103,14 @@ local function getLayoutUnderCursor(p)
 end
 
 local function isAreaFree(grid, l, t, r, b)
-	if r > grid.tilesperline
+	if r > grid.tilesperline then
 		return false
 	end
 
-	for y = t, min(b, #grid)
-		for x = l, r
+	for y = t, min(b, #grid) do
+		for x = l, r do
 			local slot = grid[y][x]
-			if slot ~= nil and slot ~= 0
+			if slot ~= nil and slot ~= 0 then
 				return false
 			end
 		end
@@ -122,15 +122,15 @@ end
 local function findFreeArea(grid, w, h)
 	local numlines = #grid
 
-	for y = 1, numlines
-		for x = 1, grid.tilesperline
-			if isAreaFree(grid, x, y, x + w - 1, y + h - 1)
+	for y = 1, numlines do
+		for x = 1, grid.tilesperline do
+			if isAreaFree(grid, x, y, x + w - 1, y + h - 1) then
 				return x, y
 			end
 		end
 	end
 
-	if numlines == 0
+	if numlines == 0 then
 		return 1, 1
 	--elseif #grid[numlines] + w <= grid.tilesperline
 		--return #grid[numlines] + 1, numlines
@@ -140,9 +140,9 @@ local function findFreeArea(grid, w, h)
 end
 
 function maps.getLayoutInGrid(grid, x, y)
-	if grid.layouts and grid.layouts[y]
+	if grid.layouts and grid.layouts[y] then
 		local layout = grid.layouts[y][x]
-		if layout
+		if layout then
 			return layout.parent
 		end
 	end
@@ -156,14 +156,14 @@ end
 
 	for ly, line in ipairs(layoutdef)
 		for lx, slot in ipairs(line)
-			if slot == addedlayout.pos
+			if slot == addedlayout.pos then
 				local x = addedlayout.l + lx - 1
 				local y = addedlayout.t + ly - 1
 
 				setSlot(category.grid, x, y, tiledefid)
 
 				local tiledef = maps.tiledefs[tiledefid]
-				if tiledef and tiledef.pickerx == nil
+				if tiledef and tiledef.pickerx == nil then
 					tiledef.pickerx, tiledef.pickery = x, y
 				end
 
@@ -173,7 +173,7 @@ end
 		end
 	end
 
-	if addedlayout.pos < layoutdef.numtiles
+	if addedlayout.pos < layoutdef.numtiles then
 		addedlayout.pos = $ + 1
 	else
 		addedlayout = nil
@@ -181,13 +181,13 @@ end
 end*/
 
 local function findNextRawTileDef(parser)
-	while true
+	while true do
 		parser.pos = $ + 1
 		local rawtiledef = parser.rawtiledefs[parser.pos]
 
 		if type(rawtiledef) ~= "table"
 		or rawtiledef.layout
-		or not maps.tiledefs[rawtiledef.id].noedit
+		or not maps.tiledefs[rawtiledef.id].noedit then
 			return rawtiledef
 		end
 	end
@@ -195,12 +195,12 @@ end
 
 local function generateLayoutTree(parser)
 	local rawtiledef = findNextRawTileDef(parser)
-	if not rawtiledef return end
+	if not rawtiledef then return end
 
 	-- Tile
-	if type(rawtiledef) == "string" or not rawtiledef.layout
+	if type(rawtiledef) == "string" or not rawtiledef.layout then
 		local tiledefid
-		if type(rawtiledef) == "string"
+		if type(rawtiledef) == "string" then
 			tiledefid = rawtiledef
 		else
 			tiledefid = rawtiledef.id
@@ -209,7 +209,7 @@ local function generateLayoutTree(parser)
 		local tiledef = maps.tiledefs[tiledefid]
 		local spanw, spanh = tiledef.editspanw, tiledef.editspanh
 
-		if spanw ~= 1 or spanh ~= 1
+		if spanw ~= 1 or spanh ~= 1 then
 			local layouttype = "rectangle"..spanw.."x"..spanh
 			local layoutdef = maps.tilelayoutdefs[layouttype]
 
@@ -221,14 +221,14 @@ local function generateLayoutTree(parser)
 				lineheights = {}
 			}
 			table.insert(tree, {w = 1, h = 1, tiledef = tiledefid, parent = tree})
-			for _ = 2, layoutdef.numtiles -- 1 is our tile, skip it
+			for _ = 2, layoutdef.numtiles do -- 1 is our tile, skip it
 				table.insert(tree, {w = 1, h = 1, tiledef = "span", parent = tree})
 			end
 
-			for x = 1, spanw
+			for x = 1, spanw do
 				tree.columnwidths[x] = 1
 			end
-			for y = 1, spanh
+			for y = 1, spanh do
 				tree.lineheights[y] = 1
 			end
 
@@ -250,19 +250,19 @@ local function generateLayoutTree(parser)
 		columnwidths = {},
 		lineheights = {}
 	}
-	for i = 1, layoutdef.numtiles
+	for i = 1, layoutdef.numtiles do
 		tree[i] = generateLayoutTree(parser)
 		tree[i].parent = tree
 	end
 
-	for y, line in ipairs(layoutdef)
-		for x, slot in ipairs(line)
-			if slot == 0
+	for y, line in ipairs(layoutdef) do
+		for x, slot in ipairs(line) do
+			if slot == 0 then
 				slot = "air"
 			end
 
 			local w, h
-			if type(slot) == "string" -- Tile ID
+			if type(slot) == "string" then -- Tile ID
 				w = maps.tiledefs[slot].editspanw
 				h = maps.tiledefs[slot].editspanh
 			else -- Placeholder for customisable tiles
@@ -275,10 +275,10 @@ local function generateLayoutTree(parser)
 		end
 	end
 
-	for _, w in ipairs(tree.columnwidths)
+	for _, w in ipairs(tree.columnwidths) do
 		tree.w = $ + w
 	end
-	for _, h in ipairs(tree.lineheights)
+	for _, h in ipairs(tree.lineheights) do
 		tree.h = $ + h
 	end
 
@@ -291,22 +291,22 @@ local function addTilesFromLayoutTree(tree, left, top, category)
 	tree.category = category
 	tree.l, tree.t = left, top
 
-	if tree.layoutdef
+	if tree.layoutdef then
 		local layoutdef = maps.tilelayoutdefs[tree.layoutdef]
 
 		local childtop = top
-		for y, line in ipairs(layoutdef)
+		for y, line in ipairs(layoutdef) do
 			local childleft = left
-			for x, slot in ipairs(line)
-				if slot == 0
+			for x, slot in ipairs(line) do
+				if slot == 0 then
 					slot = "air"
 				end
 
-				if type(slot) == "string" -- Tile ID
+				if type(slot) == "string" then -- Tile ID
 					setSlot(grid, childleft, childtop, slot)
 
 					local tiledef = maps.tiledefs[slot]
-					if tiledef and tiledef.pickerx == nil
+					if tiledef and tiledef.pickerx == nil then
 						tiledef.pickerx, tiledef.pickery = childleft, childtop
 					end
 
@@ -328,7 +328,7 @@ local function addTilesFromLayoutTree(tree, left, top, category)
 		setSlot(grid, left, top, tree.tiledef)
 
 		local tiledef = maps.tiledefs[tree.tiledef]
-		if tiledef and tiledef.pickerx == nil
+		if tiledef and tiledef.pickerx == nil then
 			tiledef.pickerx, tiledef.pickery = left, top
 		end
 
@@ -345,14 +345,14 @@ function maps.addTilesToEditor(rawtiledefs)
 		pos = 0
 	}
 
-	while parser.pos < #rawtiledefs
+	while parser.pos < #rawtiledefs do
 		local layouttree = generateLayoutTree(parser)
-		if not layouttree break end
+		if not layouttree then break end
 
 		local l, t = findFreeArea(category.grid, layouttree.w, layouttree.h)
 
-		for y = t, t + layouttree.h - 1
-			for x = l, l + layouttree.w - 1
+		for y = t, t + layouttree.h - 1 do
+			for x = l, l + layouttree.w - 1 do
 				setSlot(category.grid, x, y, 1)
 			end
 		end
@@ -415,10 +415,10 @@ end
 end*/
 
 function maps.finaliseTilePicker()
-	for _, category in ipairs(maps.tilecategories)
-		for _, line in ipairs(category.grid)
-			for x, slot in ipairs(line)
-				if type(slot) == "string"
+	for _, category in ipairs(maps.tilecategories) do
+		for _, line in ipairs(category.grid) do
+			for x, slot in ipairs(line) do
+				if type(slot) == "string" then
 					line[x] = maps.tiledefs[slot].index
 				end
 			end
@@ -527,20 +527,20 @@ local function findBestPositionInQuickPicker(p)
 	local bestscore = INT32_MAX
 	local grid = p.tilegrid
 
-	for y = 1, 3
-		for x = 1, 3
-			if grid[y][x] == p.tile
+	for y = 1, 3 do
+		for x = 1, 3 do
+			if grid[y][x] == p.tile then
 				return nil, nil
-			elseif x == p.quickpickerx and y == p.quickpickery and grid[y][x] ~= 0
+			elseif x == p.quickpickerx and y == p.quickpickery and grid[y][x] ~= 0 then
 				continue
 			end
 
 			local score = p.tilecountgrid[y][x] + abs(2 - x) + abs(2 - y)
-			if grid[y][x] ~= 0
+			if grid[y][x] ~= 0 then
 				score = $ + 100
 			end
 
-			if score < bestscore
+			if score < bestscore then
 				bestscore = score
 				bestx, besty = x, y
 			end
@@ -551,7 +551,7 @@ local function findBestPositionInQuickPicker(p)
 end
 
 function maps.addTileToQuickPicker(p)
-	if not p.tilegrid
+	if not p.tilegrid then
 		p.tilegrid = {
 			tilesperline = 3,
 
@@ -570,7 +570,7 @@ function maps.addTileToQuickPicker(p)
 	end
 
 	local x, y = findBestPositionInQuickPicker(p)
-	if x == nil
+	if x == nil then
 		p.tilecountgrid[p.quickpickery][p.quickpickerx] = $ + 1
 	else
 		p.tilegrid[y][x] = p.tile
@@ -580,34 +580,34 @@ function maps.addTileToQuickPicker(p)
 end
 
 function maps.openTilePicker(p)
-	if maps.tilepickerdirty
+	if maps.tilepickerdirty then
 		maps.finaliseTilePicker()
 	end
 
 	p.pickingtile = true
 
-	if not p.category
+	if not p.category then
 		p.category = 1
 	end
 
-	if p.tilegrid
+	if p.tilegrid then
 		p.quickpickingtile = true
 
 		-- Select the current tile by default
-		for y = 1, 3
-			for x = 1, 3
-				if p.tilegrid[y][x] == p.tile
+		for y = 1, 3 do
+			for x = 1, 3 do
+				if p.tilegrid[y][x] == p.tile then
 					p.quickpickerx, p.quickpickery = x, y
 				end
 			end
 		end
-	elseif not p.pickertile
+	elseif not p.pickertile then
 		p.pickingcategory = true
 	end
 end
 
 function maps.closeTilePicker(p)
-	if maps.tilepickerdirty
+	if maps.tilepickerdirty then
 		maps.finaliseTilePicker()
 	end
 
@@ -637,7 +637,7 @@ function maps.getLayoutPickInfo(layout, x, y)
 	layoutinfo.r = layoutinfo.l + partw - 1
 	layoutinfo.b = layoutinfo.t + parth - 1*/
 
-	if x - layout.l < layoutdef.splitx
+	if x - layout.l < layoutdef.splitx then
 		layoutinfo.l = layout.l
 		layoutinfo.r = layout.l + layoutdef.splitx - 1
 	else
@@ -645,7 +645,7 @@ function maps.getLayoutPickInfo(layout, x, y)
 		layoutinfo.r = layout.l + layoutdef.w - 1
 	end
 
-	if y - layout.t < layoutdef.splity
+	if y - layout.t < layoutdef.splity then
 		layoutinfo.t = layout.t
 		layoutinfo.b = layout.t + layoutdef.splity - 1
 	else
@@ -660,9 +660,9 @@ local function getLayoutPickInfoUnderCursor(p)
 	local layout = getLayoutUnderCursor(p)
 
 	local x, y
-	if p.quickpickingtile
+	if p.quickpickingtile then
 		local tile = p.tilegrid[p.quickpickery][p.quickpickerx]
-		if tile > 1
+		if tile > 1 then
 			local def = maps.tiledefs[tile]
 			x, y = def.pickerx, def.pickery
 		end
@@ -674,18 +674,18 @@ local function getLayoutPickInfoUnderCursor(p)
 end
 
 function maps.handleTilePicker(p, t, bt, left, right, up, down)
-	if maps.tilepickerdirty
+	if maps.tilepickerdirty then
 		maps.finaliseTilePicker()
 	end
 
-	if p.pickingcategory
+	if p.pickingcategory then
 		handleCategoryPicker(p, t, bt, left, right, up, down)
 		return
 	end
 
 	local grid
 	local x, y
-	if p.quickpickingtile
+	if p.quickpickingtile then
 		grid = p.tilegrid
 		x, y = p.quickpickerx, p.quickpickery
 	else
@@ -693,18 +693,18 @@ function maps.handleTilePicker(p, t, bt, left, right, up, down)
 		x, y = p.pickerx, p.pickery
 	end
 
-	if left and handleKeyRepeat(t, "hkeyrepeat", t.prevleft, p.builderspeed)
+	if left and handleKeyRepeat(t, "hkeyrepeat", t.prevleft, p.builderspeed) then
 		local layout = maps.getLayoutInGrid(grid, x, y)
-		if layout and layout.span
+		if layout and layout.span then
 			x, y = layout.l, layout.t
 		end
 
 		repeat
-			if x > 1
+			if x > 1 then
 				x = $ - 1
 			else
-				if not p.quickpickingtile
-					if y > 1
+				if not p.quickpickingtile then
+					if y > 1 then
 						y = $ - 1
 					else
 						y = #grid
@@ -715,19 +715,19 @@ function maps.handleTilePicker(p, t, bt, left, right, up, down)
 		until grid[y][x] ~= nil
 	end
 
-	if right and handleKeyRepeat(t, "hkeyrepeat", t.prevright, p.builderspeed)
+	if right and handleKeyRepeat(t, "hkeyrepeat", t.prevright, p.builderspeed) then
 		local layout = maps.getLayoutInGrid(grid, x, y)
-		if layout and layout.span
+		if layout and layout.span then
 			x = layout.l + layout.w - 1
 			y = layout.t
 		end
 
 		repeat
-			if x < #grid[y]
+			if x < #grid[y] then
 				x = $ + 1
 			else
-				if not p.quickpickingtile
-					if y < #grid
+				if not p.quickpickingtile then
+					if y < #grid then
 						y = $ + 1
 					else
 						y = 1
@@ -738,14 +738,14 @@ function maps.handleTilePicker(p, t, bt, left, right, up, down)
 		until grid[y][x] ~= nil
 	end
 
-	if up and handleKeyRepeat(t, "vkeyrepeat", t.prevup, p.builderspeed)
+	if up and handleKeyRepeat(t, "vkeyrepeat", t.prevup, p.builderspeed) then
 		local layout = maps.getLayoutInGrid(grid, x, y)
-		if layout and layout.span
+		if layout and layout.span then
 			x, y = layout.l, layout.t
 		end
 
 		repeat
-			if y > 1
+			if y > 1 then
 				y = $ - 1
 			else
 				y = #grid
@@ -753,14 +753,14 @@ function maps.handleTilePicker(p, t, bt, left, right, up, down)
 		until grid[y][x] ~= nil
 	end
 
-	if down and handleKeyRepeat(t, "vkeyrepeat", t.prevdown, p.builderspeed)
+	if down and handleKeyRepeat(t, "vkeyrepeat", t.prevdown, p.builderspeed) then
 		local layout = maps.getLayoutInGrid(grid, x, y)
-		if layout and layout.span
+		if layout and layout.span then
 			x, y = layout.l, layout.t + layout.h - 1
 		end
 
 		repeat
-			if y < #grid
+			if y < #grid then
 				y = $ + 1
 			else
 				y = 1
@@ -769,29 +769,29 @@ function maps.handleTilePicker(p, t, bt, left, right, up, down)
 	end
 
 	local cursorlayout = maps.getLayoutInGrid(grid, x, y)
-	if cursorlayout and cursorlayout.span
+	if cursorlayout and cursorlayout.span then
 		x, y = cursorlayout.l, cursorlayout.t
 	end
 
-	if p.quickpickingtile
+	if p.quickpickingtile then
 		p.quickpickerx, p.quickpickery = x, y
 	else
 		p.pickerx, p.pickery = x, y
 	end
 
 	-- Pick tile
-	if bt & BT_JUMP and not (t.prevbuttons & BT_JUMP)
+	if bt & BT_JUMP and not (t.prevbuttons & BT_JUMP) then
 		local tile = grid[y][x]
 
-		if tile ~= nil and tile > 1
+		if tile ~= nil and tile > 1 then
 			local tiledef = maps.tiledefs[tile]
 
 			p.tile = tile
 
 			p.layout = nil
-			if tiledef.spanw ~= 1 or tiledef.spanh ~= 1
+			if tiledef.spanw ~= 1 or tiledef.spanh ~= 1 then
 				local layout = getLayoutUnderCursor(p)
-				if layout and layout.span
+				if layout and layout.span then
 					p.layout = getLayoutPickInfoUnderCursor(p)
 				end
 			end
@@ -814,11 +814,11 @@ function maps.handleTilePicker(p, t, bt, left, right, up, down)
 	end
 
 	-- Pick layout
-	if bt & BT_CUSTOM1 and not (t.prevbuttons & BT_CUSTOM1)
+	if bt & BT_CUSTOM1 and not (t.prevbuttons & BT_CUSTOM1) then
 		local tile = grid[y][x]
 		local layout = getLayoutUnderCursor(p)
 
-		if tile ~= nil and tile > 1 and layout and not layout.span
+		if tile ~= nil and tile > 1 and layout and not layout.span then
 			p.layout = getLayoutPickInfoUnderCursor(p)
 			p.tile = tile
 			maps.addTileToQuickPicker(p)
@@ -827,12 +827,12 @@ function maps.handleTilePicker(p, t, bt, left, right, up, down)
 		end
 	end
 
-	if bt & BT_USE and not (t.prevbuttons & BT_USE)
-		if p.quickpickingtile
+	if bt & BT_SPIN and not (t.prevbuttons & BT_SPIN) then
+		if p.quickpickingtile then
 			-- Open normal tile picker
 			p.quickpickingtile = false
 			local id = p.tilegrid[y][x]
-			if id > 1
+			if id > 1 then
 				local def = maps.tiledefs[id]
 				p.category = def.category
 				p.pickerx, p.pickery = def.pickerx, def.pickery

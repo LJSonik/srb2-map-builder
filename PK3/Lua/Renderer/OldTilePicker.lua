@@ -14,13 +14,13 @@ local function drawTileCategoryPicker(v, p)
 
 	local i = 1
 	local stepsize = (TILESIZE + GAP_SIZE) * FU
-	for y = TILESIZE / 2 * FU, maps.SCREEN_HEIGHT - stepsize, stepsize
-		for x = TILESIZE / 2 * FU, maps.SCREEN_WIDTH - stepsize, stepsize
-			if i > n break end
+	for y = TILESIZE / 2 * FU, maps.SCREEN_HEIGHT - stepsize, stepsize do
+		for x = TILESIZE / 2 * FU, maps.SCREEN_WIDTH - stepsize, stepsize do
+			if i > n then break end
 
 			local icon = v.cachePatch(maps.tilecategories[i].icon)
 			local scale = TILESIZE * FU / max(icon.width, icon.height)
-			if category ~= i
+			if category ~= i then
 				v.drawScaled(
 					x + (TILESIZE * FU - icon.width  * scale) / 2 + icon.leftoffset * scale,
 					y + (TILESIZE * FU - icon.height * scale) / 2 + icon.topoffset  * scale,
@@ -44,7 +44,7 @@ local function drawTileCategoryPicker(v, p)
 
 			i = $ + 1
 		end
-		if i > n break end
+		if i > n then break end
 	end
 
 	local s = maps.tilecategories[category].name
@@ -52,11 +52,11 @@ local function drawTileCategoryPicker(v, p)
 end
 
 function maps.drawTilePicker(v, p)
-	if maps.tilepickerdirty
+	if maps.tilepickerdirty then
 		maps.finaliseTilePicker()
 	end
 
-	if p.pickingcategory
+	if p.pickingcategory then
 		drawTileCategoryPicker(v, p)
 		return
 	end
@@ -64,7 +64,7 @@ function maps.drawTilePicker(v, p)
 	local boxleft, boxtop
 	local boxwidth, boxheight
 	local grid
-	if p.quickpickingtile
+	if p.quickpickingtile then
 		grid = p.tilegrid
 
 		boxwidth = GAP_SIZE + 3 * (TILESIZE + GAP_SIZE)
@@ -82,22 +82,22 @@ function maps.drawTilePicker(v, p)
 	v.drawFill(boxleft, boxtop, boxwidth, boxheight, 31)
 
 	local cursorx, cursory
-	if p.quickpickingtile
+	if p.quickpickingtile then
 		cursorx, cursory = p.quickpickerx, p.quickpickery
 	else
 		cursorx, cursory = p.pickerx, p.pickery
 	end
 
-	for y = 1, #grid
-		for x = 1, #grid[y]
+	for y = 1, #grid do
+		for x = 1, #grid[y] do
 			local defindex = grid[y][x]
 			local def = maps.tiledefs[defindex]
 
 			local drawx = (boxleft + GAP_SIZE + (x - 1) * (TILESIZE + GAP_SIZE)) * FU
 			local drawy = (boxtop  + GAP_SIZE + (y - 1) * (TILESIZE + GAP_SIZE)) * FU
 
-			if not (def and def.visibleineditor)
-				if x == cursorx and y == cursory
+			if not (def and def.visibleineditor) then
+				if x == cursorx and y == cursory then
 					v.drawFill(drawx / FU, drawy / FU, TILESIZE, TILESIZE, 24)
 				end
 
@@ -113,7 +113,7 @@ function maps.drawTilePicker(v, p)
 
 			local scale = TILESIZE * def.scale / maps.renderscale
 
-			if p.quickpickingtile
+			if p.quickpickingtile then
 				scale = $ / max(def.editspanw, def.editspanh)
 			else
 				drawx = $ + def.editspanw * GAP_SIZE * FU / 2
@@ -126,7 +126,7 @@ function maps.drawTilePicker(v, p)
 			--drawx = $ + (TILESIZE * FU - sprite.width  * scale) / 2
 			--drawy = $ + (TILESIZE * FU - sprite.height * scale) / 2
 
-			if x == cursorx and y == cursory
+			if x == cursorx and y == cursory then
 				local highlightscale = maps.sinCycle(maps.time, HIGHLIGHT_SCALE, FU, TICRATE)
 				scale = FixedMul($, highlightscale)
 				flags = $ | (maps.sinCycle(maps.time, 0, 5, TICRATE) << V_ALPHASHIFT)

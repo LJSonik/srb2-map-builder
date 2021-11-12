@@ -27,9 +27,11 @@ function maps.areaContainsSolid(l, t, r, b, layer)
 	local tr = (r - 1) / TILESIZE
 	local tiletop = t / TILESIZE * TILESIZE
 
+	-- For each tile in the area, from top to bottom...
 	for ty = t / TILESIZE, (b - 1) / TILESIZE do
 		local i = tl + ty * mapw
 
+		-- ...and from left to right
 		for tx = tl, tr do
 			local tile = layer[i]
 
