@@ -38,18 +38,18 @@ maps.addEditorMode{
 
 	on_enter = function(p)
 		p.buildermode.penmode = 0
+		p.buildermode.oldpenmode = 0
 	end,
 
 	on_client_update = function(p, cmd)
 		local cl = maps.client
 		local mode = p.buildermode
-		local oldpenmode = mode.penmode
 
 		updatePenMode(p, cmd)
 
 		local oldx, oldy = p.builderx, p.buildery
 		if maps.handleClientEditorMovement(p, cmd)
-		and (p.builderx ~= oldx or p.buildery ~= oldy or mode.penmode ~= oldpenmode) then
+		and (p.builderx ~= oldx or p.buildery ~= oldy or mode.penmode ~= mode.oldpenmode) then
 			local input = bs.create()
 			bs.writeUInt(input, 2, mode.penmode)
 			maps.writeClientCursorMovement(input, p.builderx - oldx, p.buildery - oldy)
@@ -82,6 +82,8 @@ maps.addEditorMode{
 				)
 			end
 		end
+
+		mode.oldpenmode = mode.penmode
 	end,
 
 	on_input_received = function(input, p)
