@@ -1,61 +1,5 @@
 -- The Map Builder by LJ Sonic
 
--- Todo (important):
--- Handle gamestate resend
--- Fix chasecam off screwing up controls
--- Fix clientside bug where player can't move
-
--- Todo:
--- Don't reset when resizing map
--- Remove objects when builders build on them?
--- Prevent players from spawning in a solid block
--- Improve help menu?
--- Improve springs (better collision box, ...)
--- Change music for playing players when changed?
--- Fix/Improve layer erasing?
--- Improve sound handling
--- More tips in menus
--- Delay before allowing player respawn? (1 second? Or maybe not at all...)
--- Improve handling of map changes
--- Handle AFK players? (host.wad?)
--- Check for desynch?
-
--- Todo (fixes):
--- Remove player.maps when leaving app without leaving server?
--- Check case where 2 players leave at the same tic
--- Don't let border/tile collisions prevent object collisions
--- Fix player leaving potentially skipping next player's turn?
--- Fix players walking when moving against walls
--- Fix objects disappearing on borders
--- Fix braking sound happening sometimes
--- Check both Sonic and Tails for Tails pickup
--- Fix death animation and direction?
--- Fix player input?
-
--- Todo (features):
--- Add monitors
--- Ring toss
--- Conveyor belts?
--- Handle end signs correctly
--- Warps?
--- Brake?
--- Handle water/lava/goop? (if possible...)
--- Enemy wall?
--- Add spring falling animation?
--- Server-protected areas?
--- Teetering?
--- Ladders? (Alyssa)
--- Flowerpot? (forgot who wanted this lel)
-
--- Todo (optimisations):
--- Disable HUD for joiners
--- Improve object/blockmap hole handling
--- Compress objects in gamestate?
--- Variables for screen distance
--- Cache object sprites?
--- Add tile type optimisation tables?
--- Use blockmap to draw objects? (may cause drawing order problems)
-
 
 local menulib = ljrequire "menulib"
 local custominput = ljrequire "custominput"
@@ -209,6 +153,7 @@ function maps.startSound(n, o)
 	end
 end
 
+---@param owner player_t
 local function joinGame(owner)
 	local i = #maps.pp + 1
 	local p = {}
@@ -216,7 +161,7 @@ local function joinGame(owner)
 
 	p.owner = #owner
 
-	p.tile = nil
+	p.buildertile = nil
 	p.builderlayer = 2
 	p.bothsolid = true
 	--p.tiletype = 0
@@ -430,12 +375,22 @@ if not cpulib then
 		end
 	end)
 
+	---@param key keyevent_t
 	addHook("KeyDown", function(key)
+		if maps.compressedgamestate then
+			maps.decompressGamestate()
+		end
+
 		maps.switchEditorStateToClientSide()
 		maps.handleKeyDown(key)
 	end)
 
+	---@param key keyevent_t
 	addHook("KeyUp", function(key)
+		if maps.compressedgamestate then
+			maps.decompressGamestate()
+		end
+
 		maps.switchEditorStateToClientSide()
 		maps.handleKeyUp(key)
 	end)
