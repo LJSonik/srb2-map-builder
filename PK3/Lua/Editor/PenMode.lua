@@ -3,36 +3,6 @@ local bs = ljrequire "bytestream"
 local gui = ljrequire "ljgui"
 
 
-local function updatePenMode(p, cmd)
-	local cl = maps.client
-	local mode = p.buildermode
-
-	if mode.penmode ~= 0 then
-		if mode.penmode == 1 and p.buildertilelayoutindex ~= nil then
-			mode.penmode = 0
-		end
-	end
-
-	-- if cmd.buttons & (BT_ATTACK | BT_JUMP) and not cl.inputeaten then
-	-- 	if cl.prevbuttons & (BT_ATTACK | BT_JUMP) then -- Holding
-	-- 		if mode.penmode == 1 and p.buildertilelayoutindex ~= nil then
-	-- 			mode.penmode = 0
-	-- 		end
-	-- 	else -- Just pressed
-	-- 		local pos = p.builderx + p.buildery * cl.map.w
-
-	-- 		if cl.map[p.builderlayer][pos] ~= 1 then -- Tile under the cursor
-	-- 			mode.penmode = 2 -- Erase
-	-- 		elseif not maps.isStackFull(cl.map, pos) then
-	-- 			mode.penmode = 1 -- Build
-	-- 		end
-	-- 	end
-	-- else
-	-- 	mode.penmode = 0
-	-- end
-end
-
-
 maps.addEditorMode{
 	id = "pen",
 
@@ -57,12 +27,12 @@ maps.addEditorMode{
 
 			local tile
 			if mode.penmode == 1 then
-				if p.buildertile ~= nil then
-					tile = p.buildertile
-				elseif p.buildertilelayoutindex ~= nil then
+				if p.buildertilelayoutindex ~= nil then
 					if not maps.tileLayoutConflictsWithMap(cl.map, p) then
 						maps.placeTileLayout(cl.map, p)
 					end
+				elseif p.buildertile ~= nil then
+					tile = p.buildertile
 				end
 			elseif mode.penmode == 2 then
 				tile = 1
@@ -83,6 +53,10 @@ maps.addEditorMode{
 			end
 		end
 
+		if mode.penmode == 1 and p.buildertilelayoutindex ~= nil then
+			mode.penmode = 0
+		end
+
 		mode.oldpenmode = mode.penmode
 	end,
 
@@ -100,12 +74,12 @@ maps.addEditorMode{
 
 			local tile
 			if mode.penmode == 1 then
-				if p.buildertile ~= nil then
-					tile = p.buildertile
-				elseif p.buildertilelayoutindex ~= nil then
+				if p.buildertilelayoutindex ~= nil then
 					if not maps.tileLayoutConflictsWithMap(maps.map, p) then
 						maps.placeTileLayout(maps.map, p)
 					end
+				elseif p.buildertile ~= nil then
+					tile = p.buildertile
 				end
 			elseif mode.penmode == 2 then
 				tile = 1
