@@ -38,6 +38,8 @@ end
 function maps.handleKeyDown(key)
 	local cl = maps.client
 	if not cl then return end
+	local p = cl.player
+	if not p then return end
 
 	local root = gui.root
 
@@ -46,8 +48,27 @@ function maps.handleKeyDown(key)
 		return
 	end
 
-	if key.name == "SPACE" then
+	local keyName = key.name
+	if keyName == "SPACE" then
 		cl.panning = true
+	elseif keyName == "Wheel 1 UP" then
+		if p.editorrenderscale ~= 16 then
+			p.editorrenderscale = $ * 2
+
+			if p.builder then
+				p.renderscale = p.editorrenderscale
+				maps.centerClientCamera()
+			end
+		end
+	elseif keyName == "Wheel 1 Down" then
+		if p.editorrenderscale ~= 4 then
+			p.editorrenderscale = $ / 2
+
+			if p.builder then
+				p.renderscale = p.editorrenderscale
+				maps.centerClientCamera()
+			end
+		end
 	end
 
 	local mode = cl.player.buildermode
@@ -71,7 +92,8 @@ function maps.handleKeyUp(key)
 		return
 	end
 
-	if key.name == "SPACE" then
+	local keyName = key.name
+	if keyName == "SPACE" then
 		cl.panning = false
 	end
 

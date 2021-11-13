@@ -284,28 +284,6 @@ function maps.updateClientEditor(p, cmd, v)
 	end
 
 	if not cl.inputeaten then
-		if cmd.buttons & BT_WEAPONPREV and not (maps.client.prevbuttons & BT_WEAPONPREV) then
-			if p.editorrenderscale ~= 16 then
-				p.editorrenderscale = $ * 2
-
-				if p.builder then
-					p.renderscale = p.editorrenderscale
-					maps.centerClientCamera()
-				end
-			end
-		end
-
-		if cmd.buttons & BT_WEAPONNEXT and not (maps.client.prevbuttons & BT_WEAPONNEXT) then
-			if p.editorrenderscale ~= 4 then
-				p.editorrenderscale = $ / 2
-
-				if p.builder then
-					p.renderscale = p.editorrenderscale
-					maps.centerClientCamera()
-				end
-			end
-		end
-
 		maps.updateClientEditorCamera(p)
 
 		if cmd.buttons & BT_SPIN and not (cl.prevbuttons & BT_SPIN) then
