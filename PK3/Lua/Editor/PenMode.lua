@@ -15,8 +15,6 @@ maps.addEditorMode{
 		local cl = maps.client
 		local mode = p.buildermode
 
-		updatePenMode(p, cmd)
-
 		local oldx, oldy = p.builderx, p.buildery
 		if maps.handleClientEditorMovement(p, cmd)
 		and (p.builderx ~= oldx or p.buildery ~= oldy or mode.penmode ~= mode.oldpenmode) then
