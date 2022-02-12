@@ -1,6 +1,11 @@
+---@class ljgui
 local gui = ljrequire "ljgui.common"
 
 
+---@class maps.LevelPropertiesWindow : ljgui.Item
+---@field frameSize fixed_t
+---@field frameColor integer
+---@field content ljgui.Area
 local Window, base = gui.extend(gui.Item)
 gui.Window = Window
 

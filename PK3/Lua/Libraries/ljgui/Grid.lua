@@ -1,3 +1,4 @@
+---@class ljgui
 local gui = ljrequire "ljgui.common"
 
 

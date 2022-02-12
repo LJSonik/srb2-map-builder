@@ -1,6 +1,8 @@
+---@class ljgui
 local gui = ljrequire "ljgui.common"
 
 
+---@class ljgui.Root : ljgui.Item
 local Root, base = gui.extend(gui.Item)
 gui.Root = Root
 

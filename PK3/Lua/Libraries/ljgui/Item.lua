@@ -1,3 +1,4 @@
+---@class ljgui
 local gui = ljrequire "ljgui.common"
 
 
@@ -16,6 +17,8 @@ local gui = ljrequire "ljgui.common"
 ---@field right  fixed_t
 ---@field top    fixed_t
 ---@field bottom fixed_t
+---
+---@field focusedItem ljgui.Item
 local Item = gui.extend{}
 gui.Item = Item
 

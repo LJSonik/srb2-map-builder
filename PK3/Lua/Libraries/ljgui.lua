@@ -1,3 +1,5 @@
+---@class ljgui
+---@field root ljgui.Root
 local gui = ljrequire "ljgui.common"
 
 
