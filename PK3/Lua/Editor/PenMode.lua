@@ -105,7 +105,7 @@ maps.addEditorMode{
 	on_key_down = function(key, p)
 		if maps.handleClientEditorMovementKeyDown(key) then
 			return true
-		elseif key.name == "MOUSE1" then
+		elseif key.name == "mouse1" then
 			local cl = maps.client
 			local mode = p.buildermode
 			local pos = p.builderx + p.buildery * cl.map.w
@@ -126,7 +126,7 @@ maps.addEditorMode{
 	on_key_up = function(key, p)
 		if maps.handleClientEditorMovementKeyUp(key) then
 			return true
-		elseif key.name == "MOUSE1" then
+		elseif key.name == "mouse1" then
 			p.buildermode.penmode = 0
 			return true
 		end

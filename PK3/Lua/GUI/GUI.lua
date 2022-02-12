@@ -49,9 +49,9 @@ function maps.handleKeyDown(key)
 	end
 
 	local keyName = key.name
-	if keyName == "SPACE" then
+	if keyName == "space" then
 		cl.panning = true
-	elseif keyName == "Wheel 1 UP" then
+	elseif keyName == "wheel 1 up" then
 		if p.editorrenderscale ~= 16 then
 			p.editorrenderscale = $ * 2
 
@@ -60,7 +60,7 @@ function maps.handleKeyDown(key)
 				maps.centerClientCamera()
 			end
 		end
-	elseif keyName == "Wheel 1 Down" then
+	elseif keyName == "wheel 1 down" then
 		if p.editorrenderscale ~= 4 then
 			p.editorrenderscale = $ / 2
 
@@ -93,7 +93,7 @@ function maps.handleKeyUp(key)
 	end
 
 	local keyName = key.name
-	if keyName == "SPACE" then
+	if keyName == "space" then
 		cl.panning = false
 	end
 
