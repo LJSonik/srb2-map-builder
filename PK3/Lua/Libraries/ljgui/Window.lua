@@ -13,7 +13,7 @@ gui.Window = Window
 function Window:__init()
 	base.__init(self)
 
-	self.frameSize = 2 * FU
+	self.frameSize = FU
 	self.frameColor = 31
 
 	local content = gui.Area()
