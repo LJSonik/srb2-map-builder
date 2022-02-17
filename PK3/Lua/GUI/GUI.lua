@@ -25,7 +25,7 @@ function maps.updateGui(v, cmd)
 	end
 
 	root:update()
-	maps.updatePanel()
+	maps.updateEditorPanel()
 
 	/*if root.main.editorMenu.enabled or root.main.tilePicker then
 		cmd.forwardmove = 0

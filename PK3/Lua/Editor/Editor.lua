@@ -471,4 +471,8 @@ end)
 maps.addEditorCommand("set_cursor_layer", function(cmd, p)
 	p.builderlayer = bs.readUInt(cmd, 2) + 1
 end)
+
+maps.addEditorCommand("set_cursor_double_layering", function(cmd, p)
+	p.bothsolid = (bs.readUInt(cmd, 1) == 1)
+end)
 --#endregion

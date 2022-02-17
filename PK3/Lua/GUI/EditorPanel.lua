@@ -23,6 +23,20 @@ local Panel, base = gui.extend(gui.Area)
 maps.EditorPanel = Panel
 
 
+---@param item ljgui.Item
+---@param image string
+---@param scale fixed_t
+local function addIcon(item, image, scale)
+	local icon = gui.Image()
+	item.icon = item:attach(icon)
+
+	icon:resize(item.width, item.height)
+	icon:move(item.left, item.top)
+
+	icon:setImage(image)
+	icon:setScale(scale)
+end
+
 local function openTextDropdown(props, bt)
 	local root = gui.root
 
@@ -62,6 +76,50 @@ local function openTextDropdown(props, bt)
 	dd:move(l, dd.top)
 end
 
+local function openIconDropdown(props, bt)
+	local root = gui.root
+
+	local dd = props.panel.dropdown
+	if dd then
+		dd:detach()
+	end
+
+	dd = gui.Grid()
+	root.main:attach(dd)
+	props.panel.dropdown = dd
+
+	dd:setNumColumns(props.dropdownColumns)
+	dd:setSlotSize(32*FU)
+	dd:move(0, 0)
+
+	dd:setStyle{
+		background = { type = "color", color = 0 }
+	}
+
+	for _, itemData in ipairs(props) do
+		local item = gui.Button()
+		item:resize(32*FU, 32*FU)
+		dd:add(item)
+
+		item.onTrigger = function()
+			itemData[2]()
+			maps.closeEditorPanel()
+		end
+
+		item:setNormalStyle(normalButtonStyle)
+		item:setPointedStyle(pointedButtonStyle)
+		item:setPressedStyle(pressedButtonStyle)
+
+		addIcon(item, itemData[1], props.dropdownIconScale or FU/2)
+	end
+
+	dd:resizeToFit()
+
+	dd:move(bt.left + (bt.width - dd.width) / 2, bt.top + bt.height)
+	local left = min(max(dd.left, 0), root.width - dd.width)
+	dd:move(left, dd.top)
+end
+
 ---@param props table
 ---@return ljgui.Item
 local function addPanelButton(props)
@@ -75,18 +133,24 @@ local function addPanelButton(props)
 	bt:setPressedStyle(pressedButtonStyle)
 
 	if props.icon then
-		local icon = gui.Image()
-		bt.icon = bt:attach(icon)
-		icon:resize(32*FU, 32*FU)
-		icon:move(bt.left, bt.top)
-		icon:setImage(props.icon)
-		icon:setScale(FU/2)
+		local iconName = props.icon
+		if type(iconName) == "function" then
+			iconName = iconName()
+		end
+
+		addIcon(bt, iconName, props.iconScale or FU/2)
 	end
 
-	if props.action then
-		bt.onTrigger = props.action
-	elseif #props >= 1 then
-		bt.onTrigger = props[1][2]
+	function bt.onTrigger()
+		if props.action then
+			props.action()
+		elseif #props >= 1 then
+			props[1][2]()
+		end
+
+		if type(props.icon) == "function" then
+			bt.icon:setImage(props.icon())
+		end
 	end
 
 	function bt.onMouseEnter()
@@ -100,7 +164,12 @@ local function addPanelButton(props)
 
 		if #props >= 2 then
 			bt.class.onMouseEnter(bt)
-			openTextDropdown(props, bt)
+
+			if props.dropdownType == "icon" then
+				openIconDropdown(props, bt)
+			else
+				openTextDropdown(props, bt)
+			end
 		end
 	end
 
@@ -130,7 +199,6 @@ function Panel:setup()
 			"Play from start",
 			function()
 				ci.send(maps.prepareEditorCommand("play"))
-				maps.closeEditorMenu()
 			end
 		},
 		{
@@ -165,7 +233,8 @@ function Panel:setup()
 		bt.class.draw(bt, v)
 
 		local x, y = bt:getCenter()
-		maps.drawTile(v, maps.client.player.buildertile, x, y, FU)
+		local tile = maps.client.player.buildertile or "ghz_block1"
+		maps.drawTile(v, tile, x, y, FU)
 	end
 	buttonX = $ + panelGap
 
@@ -177,38 +246,43 @@ function Panel:setup()
 		local packet = maps.prepareEditorCommand("set_cursor_layer")
 		bs.writeUInt(packet, 2, layer - 1)
 		ci.send(packet)
-
-		layerButton.icon:setImage("MAPS_EDITOR_PICKLAYER" .. layer)
 	end
 
 	layerButton = addPanelButton{
 		panel = self,
 		x = buttonX,
-		icon = "MAPS_EDITOR_PICKLAYER1",
+
+		icon = function()
+			local p = maps.client.player
+			return "MAPS_EDITOR_PICKLAYER" .. p.builderlayer
+		end,
 
 		action = function()
 			pickLayer((maps.client.player.builderlayer % 4) + 1)
 		end,
+
+		dropdownType = "icon",
+		dropdownColumns = 1,
 		{
-			"Layer 1",
+			"MAPS_EDITOR_PICKLAYER1",
 			function()
 				pickLayer(1)
 			end
 		},
 		{
-			"Layer 2",
+			"MAPS_EDITOR_PICKLAYER2",
 			function()
 				pickLayer(2)
 			end
 		},
 		{
-			"Layer 3",
+			"MAPS_EDITOR_PICKLAYER3",
 			function()
 				pickLayer(3)
 			end
 		},
 		{
-			"Layer 4",
+			"MAPS_EDITOR_PICKLAYER4",
 			function()
 				pickLayer(4)
 			end
@@ -216,7 +290,137 @@ function Panel:setup()
 	}
 	buttonX = $ + panelGap
 
-	layerButton.icon:setImage("MAPS_EDITOR_PICKLAYER" .. maps.client.player.builderlayer)
+	addPanelButton{
+		panel = self,
+		x = buttonX,
+		icon = "MAPS_EDITOR_MODE_PEN",
+		iconScale = FU/4,
+
+		dropdownType = "icon",
+		dropdownColumns = 2,
+		dropdownIconScale = FU/4,
+		{
+			"MAPS_EDITOR_MODE_PEN",
+			function()
+				ci.send(maps.prepareEditorCommand("pen_mode"))
+				maps.enterEditorMode(maps.client.player, "pen")
+			end
+		},
+		{
+			"MAPS_EDITOR_MODE_BUCKET",
+			function()
+				ci.send(maps.prepareEditorCommand("bucket_fill_mode"))
+				maps.enterEditorMode(maps.client.player, "bucket_fill")
+			end
+		},
+	}
+	buttonX = $ + panelGap
+
+	local doubleLayerButton
+	doubleLayerButton = addPanelButton{
+		panel = self,
+		x = buttonX,
+
+		icon = function()
+			local p = maps.client.player
+			return "MAPS_EDITOR_DOUBLELAYER_" .. (p.bothsolid and "ON" or "OFF")
+		end,
+
+		{
+			"Toggle double layering",
+			function()
+				local p = maps.client.player
+
+				p.bothsolid = not $
+
+				local packet = maps.prepareEditorCommand("set_cursor_double_layering")
+				bs.writeUInt(packet, 1, p.bothsolid and 1 or 0)
+				ci.send(packet)
+			end
+		}
+	}
+	buttonX = $ + panelGap
+
+	addPanelButton{
+		panel = self,
+		x = buttonX,
+		icon = "MAPS_EDITOR_PLAY",
+
+		{
+			"???",
+			function()
+				local window = maps.LevelPropertiesWindow()
+				gui.root.main:attach(window)
+				window:setup()
+			end
+		},
+	}
+	buttonX = $ + panelGap
+
+	-- addPanelButton{
+	-- 	panel = self,
+	-- 	x = buttonX,
+	-- 	icon = "MAPS_EDITOR_PLAY",
+
+	-- 	{
+	-- 		"???",
+	-- 		function()
+	-- 		end
+	-- 	},
+	-- }
+	-- buttonX = $ + panelGap
+
+	addPanelButton{
+		panel = self,
+		x = buttonX,
+		icon = "MAPS_EDITOR_PLAY",
+
+		{
+			"???",
+			function()
+			end
+		},
+	}
+	buttonX = $ + panelGap
+
+	addPanelButton{
+		panel = self,
+		x = buttonX,
+		icon = "MAPS_EDITOR_PLAY",
+
+		{
+			"???",
+			function()
+			end
+		},
+	}
+	buttonX = $ + panelGap
+
+	addPanelButton{
+		panel = self,
+		x = buttonX,
+		icon = "MAPS_EDITOR_PLAY",
+
+		{
+			"???",
+			function()
+			end
+		},
+	}
+	buttonX = $ + panelGap
+
+	addPanelButton{
+		panel = self,
+		x = buttonX,
+		icon = "MAPS_EDITOR_PLAY",
+
+		{
+			"???",
+			function()
+			end
+		},
+	}
+	buttonX = $ + panelGap
 
 	-- local window = gui.Window()
 	-- gui.root.main:attach(window)
@@ -241,29 +445,35 @@ end
 -- end
 
 
-function maps.updatePanel()
-	local main = gui.root.main
-	local panel = main.editorPanel
-	local mouse = gui.root.mouse
+function maps.updateEditorPanel()
+	local root = gui.root
+	local panel = root.main.editorPanel
+	local mouse = root.mouse
 
 	if panel then -- Panel shown
 		local dd = panel.dropdown
-		local inside = mouse:isInsideItem(panel) or (dd and mouse:isInsideItem(dd))
+		local inside = (mouse:isInsideItem(panel) or (dd and mouse:isInsideItem(dd)))
 
 		if not inside then
-			if dd then
-				dd:detach()
-			end
-
-			panel:detach()
-			main.editorPanel = nil
+			maps.closeEditorPanel()
 		end
 	else -- Panel hidden
 		-- Show panel if mouse at top of screen
-		if mouse.y < FU then
+		if mouse.y < FU
+		and not (root.main.editorPanel or root.main.tilePicker or maps.client.panning) then
 			panel = maps.EditorPanel()
-			main.editorPanel = main:attach(panel)
+			root.main.editorPanel = root.main:attach(panel)
 			panel:setup()
 		end
 	end
+end
+
+function maps.closeEditorPanel()
+	local dd = gui.root.main.editorPanel.dropdown
+	if dd then
+		dd:detach()
+	end
+
+	gui.root.main.editorPanel:detach()
+	gui.root.main.editorPanel = nil
 end
