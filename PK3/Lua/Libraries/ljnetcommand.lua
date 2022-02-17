@@ -64,7 +64,7 @@ end
 
 COM_AddCommand("_ljnc", function(sender, s)
 	-- Decode base64
-	local stream = bs.create(bytes)
+	local stream = bs.create()
 	for i = 1, #s do
 		local c = s:sub(i, i):byte()
 
