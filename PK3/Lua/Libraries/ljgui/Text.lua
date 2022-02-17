@@ -34,7 +34,7 @@ function Text:draw(v)
 	if text then
 		local x, y = self:getCenter()
 		y = y - 2 * FU
-		v.drawString(x, y, text, f, "small-fixed-center")
+		v.drawString(x, y, text, V_ALLOWLOWERCASE, "small-fixed-center")
 	end
 
 	self:drawChildren(v)
