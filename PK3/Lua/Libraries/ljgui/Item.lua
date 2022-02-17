@@ -180,6 +180,15 @@ function Item:getCenter()
 		self.top  + self.height / 2
 end
 
+function Item:centerOnParent()
+	local parent = self.parent
+
+	self:move(
+		parent.left + (parent.width  - self.width ) / 2,
+		parent.top  + (parent.height - self.height) / 2
+	)
+end
+
 ---@param width fixed_t
 ---@param height fixed_t
 function Item:resize(width, height)
