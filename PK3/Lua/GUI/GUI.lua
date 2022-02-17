@@ -42,9 +42,10 @@ function maps.handleKeyDown(key)
 	if not p then return end
 
 	local root = gui.root
+	if not root then return end
 
 	gui.handleKeyDown(key)
-	if root and (root.main.editorPanel or root.main.tilePicker) then
+	if root.main.editorPanel or root.main.tilePicker then
 		return
 	end
 
@@ -86,9 +87,11 @@ function maps.handleKeyUp(key)
 	if not cl then return end
 
 	local root = gui.root
+	if not root then return end
 
 	gui.handleKeyUp(key)
-	if root and (root.main.editorPanel or root.main.tilePicker) then
+
+	if root.main.editorPanel or root.main.tilePicker then
 		return
 	end
 
