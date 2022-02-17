@@ -72,16 +72,6 @@ maps.addEditorMode{
 	id = "bucket_fill",
 
 	on_client_update = function(p, cmd)
-		local cl = maps.client
-
-		if not cl.inputeaten then
-			if (cmd.buttons & BT_ATTACK and not (cl.prevbuttons & BT_ATTACK))
-			or (cmd.buttons & BT_JUMP and not (cl.prevbuttons & BT_JUMP)) then
-				bucketFill(cl.map, p)
-				custominput.send(maps.prepareEditorCommand("bucket_fill"))
-			end
-		end
-
 		local oldx, oldy = p.builderx, p.buildery
 		if maps.handleClientEditorMovement(p, cmd)
 		and (p.builderx ~= oldx or p.buildery ~= oldy) then
@@ -101,6 +91,32 @@ maps.addEditorMode{
 			maps.readCursorMovement(input, p)
 		end
 	end,
+
+	---@param key keyevent_t
+	---@param p maps.Player
+	---@return boolean
+	on_key_down = function(key, p)
+		if maps.handleClientEditorMovementKeyDown(key) then
+			return true
+		elseif key.name == "mouse1" then
+			bucketFill(maps.client.map, p)
+			custominput.send(maps.prepareEditorCommand("bucket_fill"))
+
+			return true
+		end
+	end,
+
+	---@param key keyevent_t
+	---@param p maps.Player
+	---@return boolean
+	on_key_up = function(key, p)
+		if maps.handleClientEditorMovementKeyUp(key) then
+			return true
+		elseif key.name == "mouse1" then
+			p.buildermode.penmode = 0
+			return true
+		end
+	end
 }
 
 maps.addEditorCommand("bucket_fill_mode", function(p)
