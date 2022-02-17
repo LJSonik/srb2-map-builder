@@ -285,10 +285,6 @@ function maps.updateClientEditor(p, cmd, v)
 
 	if not cl.inputeaten then
 		maps.updateClientEditorCamera(p)
-
-		if cmd.buttons & BT_SPIN and not (cl.prevbuttons & BT_SPIN) then
-			maps.openEditorMenu()
-		end
 	end
 
 	if mode.on_client_update then
