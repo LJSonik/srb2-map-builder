@@ -434,6 +434,7 @@ maps.addEditorCommand("set_cursor_tile", function(cmd, p)
 	end
 
 	p.buildertile = tile
+	p.buildertilelayoutindex = nil
 end)
 
 maps.addEditorCommand("set_cursor_tile_layout", function(cmd, p)
