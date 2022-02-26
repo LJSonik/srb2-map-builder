@@ -125,7 +125,7 @@ function Button:draw(v)
 	if text then
 		local x = self.left + self.width  / 2
 		local y = self.top  + self.height / 2 - 2 * FU
-		v.drawString(x, y, text, f, "small-fixed-center")
+		v.drawString(x, y, text, V_ALLOWLOWERCASE, "small-fixed-center")
 	end
 
 	self:drawChildren(v)
