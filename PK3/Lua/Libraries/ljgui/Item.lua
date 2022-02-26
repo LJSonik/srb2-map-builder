@@ -55,6 +55,10 @@ function Item:attachFront(item, refItem)
 		self.frontChild = item
 	end
 
+	if self.onAttach then
+		self:onAttach()
+	end
+
 	return item
 end
 
@@ -84,11 +88,19 @@ function Item:attachBack(item, refItem)
 		self.backChild = item
 	end
 
+	if self.onAttach then
+		self:onAttach()
+	end
+
 	return item
 end
 
 function Item:detach(item)
 	item = $ or self
+
+	if item.onDetach then
+		item:onDetach()
+	end
 
 	local child = item.backChild
 	while child do
