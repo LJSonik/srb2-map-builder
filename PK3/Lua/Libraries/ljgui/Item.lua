@@ -18,6 +18,8 @@ local gui = ljrequire "ljgui.common"
 ---@field top    fixed_t
 ---@field bottom fixed_t
 ---
+---@field events function[]
+---
 ---@field focusedItem ljgui.Item
 local Item = gui.extend{}
 gui.Item = Item
@@ -25,6 +27,8 @@ gui.Item = Item
 
 function Item:__init()
 	self.enabled = true
+
+	self.events = {}
 
 	/*for _, template in ipairs{...} do
 		self:applyTemplate(template)
@@ -101,6 +105,8 @@ function Item:detach(item)
 	if item.onDetach then
 		item:onDetach()
 	end
+
+	gui.root.eventItems[item] = nil
 
 	local child = item.backChild
 	while child do
@@ -224,6 +230,17 @@ end
 
 function Item:hasFocus()
 	return (gui.root.focusedItem == self)
+end
+
+---@param name string
+---@param callback function
+function Item:addEvent(name, callback)
+	local items = gui.root.eventItems
+	items[name] = $ or {}
+	items[name][self] = true
+
+	self.events[name] = $ or {}
+	table.insert(self.events[name], callback)
 end
 
 ---@param x fixed_t
