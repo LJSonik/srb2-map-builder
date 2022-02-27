@@ -174,30 +174,23 @@ end
 -- 	end
 -- end
 
-function Mouse:updateClicking()
-	local wasLeftPressed = self.leftPressed
-	self.leftPressed = (mouse.buttons & MB_BUTTON1) ~= 0
+function Mouse:pressLeftButton()
+	local item = self.pointedItem
+	if item and item.onLeftMousePress then
+		item:onLeftMousePress(self)
+	end
+end
 
-	if self.leftPressed ~= wasLeftPressed then
-		local item = self.pointedItem
-		if item then
-			if self.leftPressed then
-				if item.onLeftMousePress then
-					item:onLeftMousePress(self)
-				end
-			else
-				if item.onLeftMouseRelease then
-					item:onLeftMouseRelease(self)
-				end
-			end
-		end
+function Mouse:releaseLeftButton()
+	local item = self.pointedItem
+	if item and item.onLeftMouseRelease then
+		item:onLeftMouseRelease(self)
 	end
 end
 
 function Mouse:update()
 	self:updatePosition()
 	self:updateHovering()
-	self:updateClicking()
 end
 
 ---@param v videolib
