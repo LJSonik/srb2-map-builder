@@ -106,7 +106,10 @@ function Item:detach(item)
 		item:onDetach()
 	end
 
-	gui.root.eventItems[item] = nil
+	for eventName, _ in pairs(item.events) do
+		gui.root.eventItems[eventName][item] = nil
+	end
+	item.events = {}
 
 	local child = item.backChild
 	while child do
