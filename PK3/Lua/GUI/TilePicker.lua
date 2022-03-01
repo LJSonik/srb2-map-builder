@@ -41,7 +41,7 @@ function TileButton:onMouseEnter(mouse)
 
 	picker.cursorX, picker.cursorY = self.tileGridX, self.tileGridY
 
-	if picker.selectingLayout and mouse.leftPressed then
+	if picker.selectingLayout and picker.mousePressed then
 		local firstSlot = picker.tileGrid:get(picker.selX1, picker.selY1)
 		if firstSlot and slot and firstSlot.layout == slot.layout then
 			picker.selX2, picker.selY2 = self.tileGridX, self.tileGridY
@@ -58,6 +58,8 @@ function TileButton:onLeftMousePress()
 	local picker = self.parent
 	local slot = self.slot
 	local p = maps.client.player
+
+	picker.mousePressed = true
 
 	if not slot then return end
 
@@ -122,6 +124,8 @@ end
 function TileButton:onLeftMouseRelease()
 	local picker = self.parent
 	local p = maps.client.player
+
+	picker.mousePressed = false
 
 	if picker.selectingLayout and self.slot
 	and picker.selX1 == picker.selX2 and picker.selY1 == picker.selY2 then
@@ -230,46 +234,11 @@ function CategoryButton:draw(v)
 end
 
 
+---@class maps.TilePicker : ljgui.Area
+---@field keyboardNavigation maps.KeyboardGridNavigation
 local Picker = gui.extend(gui.Area)
 maps.TilePicker = Picker
 
-
-local function handleKeyRepeat(self, counter, wasPressed, delay)
-	if not wasPressed then
-		self[counter] = TICRATE / 4
-		return true
-	elseif self[counter] == 1 then
-		self[counter] = delay
-		return true
-	else
-		self[counter] = $ - 1
-		return false
-	end
-end
-
-local function checkKeyboardInputsForGridNavigation(self, delay)
-	local left, right, up, down = maps.getLocalKeys(gui.cmd)
-	local cl = maps.client
-	local dx, dy = 0, 0
-
-	if left and handleKeyRepeat(self, "hkeyrepeat", cl.prevleft, delay) then
-		dx = -1
-	end
-
-	if right and handleKeyRepeat(self, "hkeyrepeat", cl.prevright, delay) then
-		dx = 1
-	end
-
-	if up and handleKeyRepeat(self, "vkeyrepeat", cl.prevup, delay) then
-		dy = -1
-	end
-
-	if down and handleKeyRepeat(self, "vkeyrepeat", cl.prevdown, delay) then
-		dy = 1
-	end
-
-	return dx, dy
-end
 
 function Picker:tileButtonAtPos(x, y)
 	local slot = self.tileGrid:get(x, y)
@@ -361,8 +330,8 @@ function Picker:setup()
 	self:move(0, 0)
 	self:resize(gui.root.main.width, gui.root.main.height)
 
-	self.prevButtons = gui.cmd.buttons
-	self.hkeyrepeat, self.vkeyrepeat = TICRATE / 8, TICRATE / 8
+	self.keyboardNavigation = maps.KeyboardGridNavigation(TICRATE / 4, maps.client.player.builderspeed)
+	self.mousePressed = false
 
 	if maps.client.buildertilecategoryindex then
 		self:setupTilePicker()
@@ -381,11 +350,7 @@ function Picker:cleanup()
 end
 
 function Picker:handleCategoryPickerEvents()
-	local cl = maps.client
-	local p = cl.player
-	local cmd = gui.cmd
-
-	local dx = checkKeyboardInputsForGridNavigation(self, p.builderspeed)
+	local dx = self.keyboardNavigation:update()
 	if dx ~= 0 then
 		if self.selectedCategoryIndex == nil then
 			self.selectedCategoryIndex = 1
@@ -393,35 +358,14 @@ function Picker:handleCategoryPickerEvents()
 			self.selectedCategoryIndex = min(max($ + dx, 1), #self.categoryButtons)
 		end
 	end
-
-	if cmd.buttons & BT_JUMP and not (self.prevButtons & BT_JUMP)
-	and self.selectedCategoryIndex ~= nil then
-		cl.buildertilecategoryindex = self.selectedCategoryIndex
-		self:setupTilePicker()
-	end
-
-	if cmd.buttons & BT_SPIN and not (self.prevButtons & BT_SPIN) then
-		closeTilePicker()
-	end
 end
 
 function Picker:handleTilePickerEvents()
-	local cl = maps.client
-	local p = cl.player
-	local cmd = gui.cmd
-
-	local dx, dy = checkKeyboardInputsForGridNavigation(self, p.builderspeed)
+	local dx, dy = self.keyboardNavigation:update()
 	if dx ~= 0 or dy ~= 0 then
 		self.cursorX = min(max($ + dx, 1), self.tileGrid.width)
 		self.cursorY = min(max($ + dy, 1), self.tileGrid.height)
 		self.pointedButton = self:tileButtonAtPos(self.cursorX, self.cursorY)
-	end
-
-	if cmd.buttons & BT_JUMP and not (self.prevButtons & BT_JUMP) then
-	end
-
-	if cmd.buttons & BT_SPIN and not (self.prevButtons & BT_SPIN) then
-		self:setupCategoryPicker()
 	end
 end
 
@@ -431,8 +375,37 @@ function Picker:handleEvents()
 	else
 		self:handleTilePickerEvents()
 	end
+end
 
-	self.prevButtons = gui.cmd.buttons
+---@param key keyevent_t
+function Picker:onKeyDown(key)
+	local cl = maps.client
+	local keyName = key.name
+
+	self.keyboardNavigation:keyDown(key)
+
+	if self.categoryIndex == nil then
+		if keyName == "enter" and self.selectedCategoryIndex ~= nil then
+			cl.buildertilecategoryindex = self.selectedCategoryIndex
+			self:setupTilePicker()
+			return true
+		elseif keyName == "escape" then
+			closeTilePicker()
+			return true
+		end
+	else
+		if keyName == "enter" then
+			return true
+		elseif keyName == "escape" then
+			self:setupCategoryPicker()
+			return true
+		end
+	end
+end
+
+---@param key keyevent_t
+function Picker:onKeyUp(key)
+	self.keyboardNavigation:keyUp(key)
 end
 
 local function drawRectangleBorders(v, l, t, w, h, borderSize, color)
