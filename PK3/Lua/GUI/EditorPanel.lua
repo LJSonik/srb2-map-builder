@@ -185,6 +185,8 @@ function Panel:setup()
 	self:move(0, 0)
 	self:resize(self.parent.width, 32*FU)
 
+	self:addEvent("KeyDown", Panel.onKeyDownAnywhere)
+
 	self:setStyle(panelStyle)
 
 	local panelGap = (32 + 0) * FU
@@ -444,29 +446,20 @@ end
 -- 	gui.root.main.editorPanel = nil
 -- end
 
+---@param key keyevent_t
+function Panel:onKeyDownAnywhere(key)
+	if key.name ~= "mouse1" then return end
 
-function maps.updateEditorPanel()
-	local root = gui.root
-	local panel = root.main.editorPanel
-	local mouse = root.mouse
+	local mouse = gui.root.mouse
+	local dd = self.dropdown
+	local inside = (mouse:isInsideItem(self) or (dd and mouse:isInsideItem(dd)))
 
-	if panel then -- Panel shown
-		local dd = panel.dropdown
-		local inside = (mouse:isInsideItem(panel) or (dd and mouse:isInsideItem(dd)))
-
-		if not inside then
-			maps.closeEditorPanel()
-		end
-	else -- Panel hidden
-		-- Show panel if mouse at top of screen
-		if mouse.y < FU
-		and not (root.main.editorPanel or root.main.tilePicker or maps.client.panning) then
-			panel = maps.EditorPanel()
-			root.main.editorPanel = root.main:attach(panel)
-			panel:setup()
-		end
+	if not inside then
+		maps.closeEditorPanel()
+		return true
 	end
 end
+
 
 function maps.closeEditorPanel()
 	local dd = gui.root.main.editorPanel.dropdown

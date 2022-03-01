@@ -25,7 +25,6 @@ function maps.updateGui(v, cmd)
 	end
 
 	root:update()
-	maps.updateEditorPanel()
 
 	/*if root.main.editorMenu.enabled or root.main.tilePicker then
 		cmd.forwardmove = 0
@@ -44,13 +43,23 @@ function maps.handleKeyDown(key)
 	local root = gui.root
 	if not root then return end
 
+	local panel = root.main.editorPanel
+
 	gui.handleKeyDown(key)
-	if root.main.editorPanel or root.main.tilePicker then
+	if panel or root.main.tilePicker then
 		return
 	end
 
 	local keyName = key.name
-	if keyName == "space" then
+	if keyName == "mouse1" then
+		-- Show panel if mouse at top of screen
+		if root.mouse.y < FU and not maps.client.panning then
+			panel = maps.EditorPanel()
+			root.main.editorPanel = root.main:attach(panel)
+			panel:setup()
+			return
+		end
+	elseif keyName == "space" then
 		cl.panning = true
 	elseif keyName == "wheel 1 up" then
 		if p.editorrenderscale ~= 16 then
