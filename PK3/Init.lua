@@ -49,6 +49,7 @@ for _, filename in ipairs{
 	"GUI/EditorPanel.lua",
 	"GUI/EditorMenu.lua",
 	"GUI/TilePicker.lua",
+	"GUI/KeyboardGridNavigation.lua",
 	"GUI/PaletteColorPicker.lua",
 
 	"Data/Init.lua",
