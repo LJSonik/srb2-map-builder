@@ -89,7 +89,7 @@ local function openIconDropdown(props, bt)
 	props.panel.dropdown = dd
 
 	dd:setNumColumns(props.dropdownColumns)
-	dd:setSlotSize(32*FU)
+	dd:setSlotSize(24*FU)
 	dd:move(0, 0)
 
 	dd:setStyle{
@@ -98,7 +98,7 @@ local function openIconDropdown(props, bt)
 
 	for _, itemData in ipairs(props) do
 		local item = gui.Button()
-		item:resize(32*FU, 32*FU)
+		item:resize(24*FU, 24*FU)
 		dd:add(item)
 
 		item.onTrigger = function()
@@ -125,7 +125,7 @@ end
 local function addPanelButton(props)
 	local bt = gui.Button()
 	props.panel:attach(bt)
-	bt:resize(32*FU, 32*FU)
+	bt:resize(24*FU, 24*FU)
 	bt:move(props.x, 0)
 
 	bt:setNormalStyle(normalButtonStyle)
@@ -183,13 +183,13 @@ end
 
 function Panel:setup()
 	self:move(0, 0)
-	self:resize(self.parent.width, 32*FU)
+	self:resize(self.parent.width, 24*FU)
 
 	self:addEvent("KeyDown", Panel.onKeyDownAnywhere)
 
 	self:setStyle(panelStyle)
 
-	local panelGap = (32 + 0) * FU
+	local panelGap = (24 + 0) * FU
 	local buttonX = 0
 
 	addPanelButton{
