@@ -63,7 +63,7 @@ maps.addEditorMode{
 		local inputtype = bs.readUInt(input, 2)
 
 		if inputtype == 3 then
-			maps.receiveEditorCommand(input, p)
+			maps.receiveEditorNetCommand(input, p)
 		else
 			local oldx, oldy = p.builderx, p.buildery
 			mode.penmode = inputtype
@@ -133,6 +133,6 @@ maps.addEditorMode{
 	end
 }
 
-maps.addEditorCommand("pen_mode", function(p)
+maps.addEditorNetCommand("pen_mode", function(p)
 	maps.enterEditorMode(p, "pen")
 end)

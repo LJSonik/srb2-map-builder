@@ -200,7 +200,7 @@ function Panel:setup()
 		{
 			"Play from start",
 			function()
-				ci.send(maps.prepareEditorCommand("play"))
+				ci.send(maps.prepareEditorNetCommand("play"))
 			end
 		},
 		{
@@ -245,7 +245,7 @@ function Panel:setup()
 	local function pickLayer(layer)
 		maps.client.player.builderlayer = layer
 
-		local packet = maps.prepareEditorCommand("set_cursor_layer")
+		local packet = maps.prepareEditorNetCommand("set_cursor_layer")
 		bs.writeUInt(packet, 2, layer - 1)
 		ci.send(packet)
 	end
@@ -304,14 +304,14 @@ function Panel:setup()
 		{
 			"MAPS_EDITOR_MODE_PEN",
 			function()
-				ci.send(maps.prepareEditorCommand("pen_mode"))
+				ci.send(maps.prepareEditorNetCommand("pen_mode"))
 				maps.enterEditorMode(maps.client.player, "pen")
 			end
 		},
 		{
 			"MAPS_EDITOR_MODE_BUCKET",
 			function()
-				ci.send(maps.prepareEditorCommand("bucket_fill_mode"))
+				ci.send(maps.prepareEditorNetCommand("bucket_fill_mode"))
 				maps.enterEditorMode(maps.client.player, "bucket_fill")
 			end
 		},
@@ -335,7 +335,7 @@ function Panel:setup()
 
 				p.bothsolid = not $
 
-				local packet = maps.prepareEditorCommand("set_cursor_double_layering")
+				local packet = maps.prepareEditorNetCommand("set_cursor_double_layering")
 				bs.writeUInt(packet, 1, p.bothsolid and 1 or 0)
 				ci.send(packet)
 			end

@@ -15,7 +15,7 @@ local wheelDef = {
 			local p = maps.client.player
 			p.builderlayer = ($ % 4) + 1
 
-			local cmd = maps.prepareEditorCommand("set_cursor_layer")
+			local cmd = maps.prepareEditorNetCommand("set_cursor_layer")
 			bs.writeUInt(cmd, 2, p.builderlayer - 1)
 			ci.send(cmd)
 		end
@@ -62,7 +62,7 @@ local wheelDef = {
 			text = "From here",
 
 			onTrigger = function()
-				ci.send(maps.prepareEditorCommand("play"))
+				ci.send(maps.prepareEditorNetCommand("play"))
 				maps.closeEditorMenu()
 			end
 		},*/
@@ -71,7 +71,7 @@ local wheelDef = {
 		{
 			text = "From test spawn",
 			onTrigger = function()
-				ci.send(maps.prepareEditorCommand("play"))
+				ci.send(maps.prepareEditorNetCommand("play"))
 				maps.closeEditorMenu()
 			end
 		},
@@ -79,7 +79,7 @@ local wheelDef = {
 		{
 			text = "From start",
 			onTrigger = function()
-				ci.send(maps.prepareEditorCommand("play"))
+				ci.send(maps.prepareEditorNetCommand("play"))
 				maps.closeEditorMenu()
 			end
 		},
@@ -87,7 +87,7 @@ local wheelDef = {
 	{
 		text = "Bucket fill",
 		onTrigger = function()
-			ci.send(maps.prepareEditorCommand("bucket_fill_mode"))
+			ci.send(maps.prepareEditorNetCommand("bucket_fill_mode"))
 			maps.enterEditorMode(maps.client.player, "bucket_fill")
 			maps.closeEditorMenu()
 		end
@@ -95,7 +95,7 @@ local wheelDef = {
 	{
 		text = "Pen",
 		onTrigger = function()
-			ci.send(maps.prepareEditorCommand("pen_mode"))
+			ci.send(maps.prepareEditorNetCommand("pen_mode"))
 			maps.enterEditorMode(maps.client.player, "pen")
 			maps.closeEditorMenu()
 		end

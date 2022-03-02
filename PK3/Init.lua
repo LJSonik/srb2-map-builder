@@ -31,7 +31,7 @@ for _, filename in ipairs{
 	"Editor/TilePicker.lua",
 	"Editor/TilePickerGrid.lua",
 	"Editor/OldWheelMenu.lua",
-	"Editor/Commands.lua",
+	"Editor/ConsoleCommands.lua",
 	"Editor/PenMode.lua",
 	"Editor/BucketFillMode.lua",
 

@@ -22,7 +22,7 @@ end)
 ---@field on_key_down function
 ---@field on_key_up function
 
----@class maps.EditorCommand
+---@class maps.EditorNetCommand
 ---@field name string
 ---@field id integer
 ---@field func function
@@ -33,8 +33,8 @@ end)
 ---@type table<string, maps.EditorModeDef>
 maps.editormodes = {}
 
----@type table<integer|string, maps.EditorCommand>
-local editorcommands = {}
+---@type table<integer|string, maps.EditorNetCommand>
+local editornetcommands = {}
 --#endregion
 
 
@@ -264,21 +264,21 @@ end
 	end
 end*/
 
-function maps.addEditorCommand(name, func)
+function maps.addEditorNetCommand(name, func)
 	local command = {
 		name = name,
-		id = #editorcommands + 1,
+		id = #editornetcommands + 1,
 		func = func
 	}
 
-	editorcommands[name] = command
-	editorcommands[command.id] = command
+	editornetcommands[name] = command
+	editornetcommands[command.id] = command
 end
 
-function maps.prepareEditorCommand(name)
+function maps.prepareEditorNetCommand(name)
 	local input = bs.create()
 	bs.writeUInt(input, 2, 3)
-	bs.writeByte(input, editorcommands[name].id)
+	bs.writeByte(input, editornetcommands[name].id)
 
 	return input
 end
@@ -287,8 +287,8 @@ function maps.addEditorMode(mode)
 	maps.editormodes[mode.id] = mode
 end
 
-function maps.receiveEditorCommand(input, p)
-	local command = editorcommands[bs.readByte(input)]
+function maps.receiveEditorNetCommand(input, p)
+	local command = editornetcommands[bs.readByte(input)]
 	command.func(input, p)
 end
 
@@ -416,17 +416,17 @@ end
 
 
 --#region editor commands
-maps.addEditorCommand("play", function(_, p)
+maps.addEditorNetCommand("play", function(_, p)
 	maps.spawnPlayer(p)
 end)
 
 -- !!! Check invalid input
-maps.addEditorCommand("set_cursor_position", function(cmd, p)
+maps.addEditorNetCommand("set_cursor_position", function(cmd, p)
 	p.builderx = bs.readUInt16(cmd)
 	p.buildery = bs.readUInt16(cmd)
 end)
 
-maps.addEditorCommand("set_cursor_tile", function(cmd, p)
+maps.addEditorNetCommand("set_cursor_tile", function(cmd, p)
 	local tile = bs.readUInt16(cmd)
 	if not maps.tiledefs[tile] then
 		-- !!! error
@@ -437,7 +437,7 @@ maps.addEditorCommand("set_cursor_tile", function(cmd, p)
 	p.buildertilelayoutindex = nil
 end)
 
-maps.addEditorCommand("set_cursor_tile_layout", function(cmd, p)
+maps.addEditorNetCommand("set_cursor_tile_layout", function(cmd, p)
 	local index = bs.readUInt16(cmd)
 	local x1 = bs.readByte(cmd)
 	local y1 = bs.readByte(cmd)
@@ -468,11 +468,11 @@ maps.addEditorCommand("set_cursor_tile_layout", function(cmd, p)
 	p.buildertilelayoutanchory = anchory
 end)
 
-maps.addEditorCommand("set_cursor_layer", function(cmd, p)
+maps.addEditorNetCommand("set_cursor_layer", function(cmd, p)
 	p.builderlayer = bs.readUInt(cmd, 2) + 1
 end)
 
-maps.addEditorCommand("set_cursor_double_layering", function(cmd, p)
+maps.addEditorNetCommand("set_cursor_double_layering", function(cmd, p)
 	p.bothsolid = (bs.readUInt(cmd, 1) == 1)
 end)
 --#endregion

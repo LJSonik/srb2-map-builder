@@ -86,7 +86,7 @@ maps.addEditorMode{
 		local inputtype = bs.readUInt(input, 2) -- !!!
 
 		if inputtype == 3 then
-			maps.receiveEditorCommand(input, p)
+			maps.receiveEditorNetCommand(input, p)
 		else
 			maps.readCursorMovement(input, p)
 		end
@@ -100,7 +100,7 @@ maps.addEditorMode{
 			return true
 		elseif key.name == "mouse1" then
 			bucketFill(maps.client.map, p)
-			custominput.send(maps.prepareEditorCommand("bucket_fill"))
+			custominput.send(maps.prepareEditorNetCommand("bucket_fill"))
 
 			return true
 		end
@@ -119,10 +119,10 @@ maps.addEditorMode{
 	end
 }
 
-maps.addEditorCommand("bucket_fill_mode", function(p)
+maps.addEditorNetCommand("bucket_fill_mode", function(p)
 	maps.enterEditorMode(p, "bucket_fill")
 end)
 
-maps.addEditorCommand("bucket_fill", function(input, p)
+maps.addEditorNetCommand("bucket_fill", function(input, p)
 	bucketFill(maps.map, p)
 end)

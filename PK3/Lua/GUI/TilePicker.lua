@@ -91,7 +91,7 @@ function TileButton:onLeftMousePress()
 			p.buildertilelayoutanchorx = slot.layoutx
 			p.buildertilelayoutanchory = slot.layouty
 
-			local command = maps.prepareEditorCommand("set_cursor_tile_layout")
+			local command = maps.prepareEditorNetCommand("set_cursor_tile_layout")
 			bs.writeUInt16(command, p.buildertilelayoutindex)
 			bs.writeByte(command, p.buildertilelayoutx1)
 			bs.writeByte(command, p.buildertilelayouty1)
@@ -113,7 +113,7 @@ function TileButton:onLeftMousePress()
 		p.buildertile = maps.tiledefs[slot.tiledefid].index
 		p.buildertilelayoutindex = nil
 
-		local command = maps.prepareEditorCommand("set_cursor_tile")
+		local command = maps.prepareEditorNetCommand("set_cursor_tile")
 		bs.writeUInt16(command, p.buildertile)
 		custominput.send(command)
 
@@ -132,7 +132,7 @@ function TileButton:onLeftMouseRelease()
 		p.buildertile = maps.tiledefs[self.slot.tiledefid].index
 		p.buildertilelayoutindex = nil
 
-		local command = maps.prepareEditorCommand("set_cursor_tile")
+		local command = maps.prepareEditorNetCommand("set_cursor_tile")
 		bs.writeUInt16(command, p.buildertile)
 		custominput.send(command)
 

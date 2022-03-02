@@ -124,7 +124,7 @@ function maps.handleClientEditorMovement(p, cmd)
 		end
 
 		if cl.fullresendtime == 0 then
-			local command = maps.prepareEditorCommand("set_cursor_position")
+			local command = maps.prepareEditorNetCommand("set_cursor_position")
 			bs.writeUInt16(command, p.builderx)
 			bs.writeUInt16(command, p.buildery)
 			custominput.send(command)
