@@ -141,19 +141,19 @@ local function handleClientEditorMovementKey(key, down)
 	local cl = maps.client
 	key = key.name
 
-	if key == "LEFT ARROW" then
+	if key == "left arrow" then
 		cl.leftpressed = down
 		cl.hkeyrepeat = TICRATE / 4
 		return true
-	elseif key == "RIGHT ARROW" then
+	elseif key == "right arrow" then
 		cl.rightpressed = down
 		cl.hkeyrepeat = TICRATE / 4
 		return true
-	elseif key == "UP ARROW" then
+	elseif key == "up arrow" then
 		cl.uppressed = down
 		cl.vkeyrepeat = TICRATE / 4
 		return true
-	elseif key == "DOWN ARROW" then
+	elseif key == "down arrow" then
 		cl.downpressed = down
 		cl.vkeyrepeat = TICRATE / 4
 		return true
