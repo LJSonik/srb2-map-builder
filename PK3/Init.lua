@@ -27,6 +27,7 @@ for _, filename in ipairs{
 
 	"Editor/Editor.lua",
 	"Editor/Client.lua",
+	"Editor/Command.lua",
 	"Editor/Building.lua",
 	"Editor/TilePicker.lua",
 	"Editor/TilePickerGrid.lua",

@@ -43,6 +43,8 @@ function maps.handleKeyDown(key)
 	local root = gui.root
 	if not root then return end
 
+	if maps.handleEditorCommandKeyDown(key) then return end
+
 	local panel = root.main.editorPanel
 
 	gui.handleKeyDown(key)
@@ -97,6 +99,8 @@ function maps.handleKeyUp(key)
 
 	local root = gui.root
 	if not root then return end
+
+	if maps.handleEditorCommandKeyUp(key) then return end
 
 	gui.handleKeyUp(key)
 

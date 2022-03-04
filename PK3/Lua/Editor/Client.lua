@@ -264,6 +264,7 @@ function maps.leaveClientEditor(p)
 
 	cl.backup = nil
 
+	maps.clearEditorKeys()
 	maps.uninitialiseGui()
 end
 
