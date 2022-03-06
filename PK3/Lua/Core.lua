@@ -382,7 +382,7 @@ if not cpulib then
 		end
 
 		maps.switchEditorStateToClientSide()
-		maps.handleKeyDown(key)
+		return maps.handleKeyDown(key)
 	end)
 
 	---@param key keyevent_t
@@ -392,7 +392,7 @@ if not cpulib then
 		end
 
 		maps.switchEditorStateToClientSide()
-		maps.handleKeyUp(key)
+		return maps.handleKeyUp(key)
 	end)
 
 	addHook("PreThinkFrame", function()

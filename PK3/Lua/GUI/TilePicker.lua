@@ -102,12 +102,15 @@ function TileButton:onLeftMousePress()
 			custominput.send(command)
 
 			closeTilePicker()
+			return true
 		else
 			-- Start selection
 			local x, y = self.tileGridX, self.tileGridY
 			picker.selectingLayout = true
 			picker.selX1, picker.selY1 = x, y
 			picker.selX2, picker.selY2 = x, y
+
+			return true
 		end
 	else
 		p.buildertile = maps.tiledefs[slot.tiledefid].index
@@ -118,6 +121,7 @@ function TileButton:onLeftMousePress()
 		custominput.send(command)
 
 		closeTilePicker()
+		return true
 	end
 end
 
@@ -137,6 +141,7 @@ function TileButton:onLeftMouseRelease()
 		custominput.send(command)
 
 		closeTilePicker()
+		return true
 	end
 end
 

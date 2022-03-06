@@ -36,20 +36,19 @@ end
 ---@param key keyevent_t
 function maps.handleKeyDown(key)
 	local cl = maps.client
-	if not cl then return end
+	if not cl then return false end
 	local p = cl.player
-	if not p then return end
+	if not p then return false end
 
 	local root = gui.root
-	if not root then return end
+	if not root then return false end
 
-	if maps.handleEditorCommandKeyDown(key) then return end
+	if maps.handleEditorCommandKeyDown(key) then return true end
 
 	local panel = root.main.editorPanel
 
-	gui.handleKeyDown(key)
-	if panel or root.main.tilePicker then
-		return
+	if gui.handleKeyDown(key) or panel or root.main.tilePicker then
+		return true
 	end
 
 	local keyName = key.name
@@ -59,35 +58,15 @@ function maps.handleKeyDown(key)
 			panel = maps.EditorPanel()
 			root.main.editorPanel = root.main:attach(panel)
 			panel:setup()
-			return
-		end
-	elseif keyName == "space" then
-		cl.panning = true
-	elseif keyName == "wheel 1 up" then
-		if p.editorrenderscale ~= 16 then
-			p.editorrenderscale = $ * 2
-
-			if p.builder then
-				p.renderscale = p.editorrenderscale
-				maps.centerClientCamera()
-			end
-		end
-	elseif keyName == "wheel 1 down" then
-		if p.editorrenderscale ~= 4 then
-			p.editorrenderscale = $ / 2
-
-			if p.builder then
-				p.renderscale = p.editorrenderscale
-				maps.centerClientCamera()
-			end
+			return true
 		end
 	end
 
 	local mode = cl.player.buildermode
 	if mode then
 		local modedef = maps.editormodes[mode.id]
-		if modedef.on_key_down then
-			modedef.on_key_down(key, cl.player)
+		if modedef.on_key_down and modedef.on_key_down(key, cl.player) then
+			return true
 		end
 	end
 end
@@ -95,29 +74,22 @@ end
 ---@param key keyevent_t
 function maps.handleKeyUp(key)
 	local cl = maps.client
-	if not cl then return end
+	if not cl then return false end
 
 	local root = gui.root
-	if not root then return end
+	if not root then return false end
 
-	if maps.handleEditorCommandKeyUp(key) then return end
+	if maps.handleEditorCommandKeyUp(key) then return false end
 
-	gui.handleKeyUp(key)
-
-	if root.main.editorPanel or root.main.tilePicker then
-		return
-	end
-
-	local keyName = key.name
-	if keyName == "space" then
-		cl.panning = false
+	if gui.handleKeyUp(key) or root.main.editorPanel or root.main.tilePicker then
+		return true
 	end
 
 	local mode = cl.player.buildermode
 	if mode then
 		local modedef = maps.editormodes[mode.id]
-		if modedef.on_key_up then
-			modedef.on_key_up(key, cl.player)
+		if modedef.on_key_up and modedef.on_key_up(key, cl.player) then
+			return true
 		end
 	end
 end

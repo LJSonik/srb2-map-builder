@@ -37,9 +37,10 @@ function Root:update()
 end
 
 ---@param name string
+---@return boolean
 function Root:callEvent(name, ...)
 	local eventItems = self.eventItems[name]
-	if not eventItems then return end
+	if not eventItems then return false end
 
 	for item, _ in pairs(eventItems) do
         for _, callback in ipairs(item.events[name]) do
@@ -48,6 +49,8 @@ function Root:callEvent(name, ...)
 			end
         end
     end
+
+	return false
 end
 
 function Root:draw(v)
