@@ -2,7 +2,8 @@
 local gui = ljrequire "ljgui.common"
 
 
----@type keyevent_t
+---@param key keyevent_t
+---@return boolean
 function gui.handleKeyDown(key)
     local root = gui.root
 
@@ -16,7 +17,8 @@ function gui.handleKeyDown(key)
     return item and item.onKeyDown and item:onKeyDown(key) and true or false
 end
 
----@type keyevent_t
+---@param key keyevent_t
+---@return boolean
 function gui.handleKeyUp(key)
     local root = gui.root
 

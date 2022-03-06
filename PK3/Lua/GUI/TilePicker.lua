@@ -383,6 +383,7 @@ function Picker:handleEvents()
 end
 
 ---@param key keyevent_t
+---@return boolean
 function Picker:onKeyDown(key)
 	local cl = maps.client
 	local keyName = key.name
